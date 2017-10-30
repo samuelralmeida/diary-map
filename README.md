@@ -7,7 +7,7 @@ better than to use a map to write everything down, add photos and memories.
 Create config.js in js folder following code below:
 ```
 var config = {
-  GOOGLE_KEY : 'YOUR_GOOGLE_MAP_API'
+  GOOGLE_KEY : 'YOUR_GOOGLE_MAP_API_KEY'
 }
 ```
 
