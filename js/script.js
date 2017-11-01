@@ -109,3 +109,29 @@ function initMap() {
 var Wish = function(data) {
 
 }
+
+var ViewModel = function() {
+    var self = this;
+    this.wishOrRealized = ko.observable();
+    this.showWish = ko.observable(false);
+    this.showDream = ko.observable(false);
+
+    this.wishOrRealized.subscribe(function(newValue){
+        this.showForm(newValue);
+    }, this);
+
+    this.showForm = function(value) {
+        if (value === 'wish') {
+            this.showWish(true);
+            this.showDream(false);
+        } else if (value === 'realized'){
+            this.showDream(true);
+            this.showWish(false);
+        } else {
+            this.showDream(false);
+            this.showWish(false);
+        }
+    }
+}
+
+ko.applyBindings(new ViewModel)

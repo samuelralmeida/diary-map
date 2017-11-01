@@ -11,3 +11,7 @@ html, body {
  p {
      text-align: center;
  }
+
+ #wish, #dream {
+     display: none;
+ }

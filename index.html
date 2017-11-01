@@ -9,6 +9,7 @@
     <link rel=stylesheet type=text/css href="static/style.css">
     <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
 </head>
 <body>
 
@@ -29,15 +30,18 @@
               <input id="places-search" type="text" size="35">
               <input id="go-places" type="button" value="Go">
             </div>
-            <span><input type="radio" name="flavorGroup" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
-            <span><input type="radio" name="flavorGroup" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
+            <span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
+            <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
           </form>
       </div>
     </nav>
 
     <div class="container-fluid">
         <div class="col-sm-2">
-            <p>Command</p>
+
+            <div data-bind="visible: showWish">Wish</div>
+            <div data-bind="visible: showDream">Dream</div>
+
         </div>
 
         <div id="map" class="col-sm-8"></div>
