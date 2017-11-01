@@ -8,25 +8,18 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel=stylesheet type=text/css href="static/style.css">
     <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
 
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-expand-md fixed-top navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Diary Map</a>
+          <a class="brand navbar-brand" href="#">Diary Map</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li><a href="#">View wishes</a></li>
             <li><a href="#">Dreams come true</a></li>
@@ -34,33 +27,17 @@
           <form class="navbar-form navbar-left">
             <div class="form-group">
               <input id="places-search" type="text" size="35">
+              <input id="go-places" type="button" value="Go">
             </div>
-            <input id="go-places" type="button" value="Go">
             <span><input type="radio" name="flavorGroup" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
             <span><input type="radio" name="flavorGroup" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
           </form>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Link</a></li>
-          </ul>
-        </div>
       </div>
     </nav>
 
     <div class="container-fluid">
         <div class="col-sm-2">
             <p>Command</p>
-
-            <!--<div>
-              <span class="text">Search a place</span>
-              <input id="places-search" type="text">
-              <input id="go-places" type="button" value="Go">
-          </div>-->
-            <div data-bind="visible: wantsSpam">
-                <div><input type="radio" name="flavorGroup" value="wish" data-bind="checked: wishOrRealized" />A wish</div>
-                <div><input type="radio" name="flavorGroup" value="realized" data-bind="checked: wishOrRealized" />An achievement</div>
-            </div>
-
-
         </div>
 
         <div id="map" class="col-sm-8"></div>
