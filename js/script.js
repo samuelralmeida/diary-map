@@ -113,8 +113,8 @@ var Wish = function(data) {
 var ViewModel = function() {
     var self = this;
     this.wishOrRealized = ko.observable();
-    this.showWish = ko.observable(false);
-    this.showDream = ko.observable(false);
+    this.inputWish = ko.observable(false);
+    this.inputAnchievement = ko.observable(false);
 
     this.wishOrRealized.subscribe(function(newValue){
         this.showForm(newValue);
@@ -122,16 +122,23 @@ var ViewModel = function() {
 
     this.showForm = function(value) {
         if (value === 'wish') {
-            this.showWish(true);
-            this.showDream(false);
+            this.inputAnchievement(false);
+            this.inputWish(true);
+            this.scrollView('step');
         } else if (value === 'realized'){
-            this.showDream(true);
-            this.showWish(false);
+            this.inputAnchievement(true);
+            this.inputWish(false);
+            this.scrollView('step');
         } else {
-            this.showDream(false);
-            this.showWish(false);
+            this.inputAnchievement(false);
+            this.inputWish(false);
         }
     }
+
+    this.scrollView = function(value) {
+        document.getElementById(value).scrollIntoView();
+    }
+
 }
 
 ko.applyBindings(new ViewModel)

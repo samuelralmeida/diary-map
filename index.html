@@ -3,55 +3,97 @@
 <head>
     <title>Neighborhood map</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel=stylesheet type=text/css href="static/style.css">
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-md fixed-top navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <a class="brand navbar-brand" href="#">Diary Map</a>
-        </div>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <a class="navbar-brand" href="#">Diary Map</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-          <ul class="nav navbar-nav">
-            <li><a href="#">View wishes</a></li>
-            <li><a href="#">Dreams come true</a></li>
-          </ul>
-          <form class="navbar-form navbar-left">
-            <div class="form-group">
-              <input id="places-search" type="text" size="35">
-              <input id="go-places" type="button" value="Go">
-            </div>
-            <span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
-            <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
-          </form>
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">View wishes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Dreams come true</a>
+          </li>
+        </ul>
       </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="col-sm-2">
+    <main role="main">
 
-            <div data-bind="visible: showWish">Wish</div>
-            <div data-bind="visible: showDream">Dream</div>
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3">Hello, memories!</h1>
+          <p>Plan fantastic memories and never forget them again.</p>
+          <div class="place-search">
+            <input id="places-search" type="text" placeholder="Select place and option">
+            <input id="go-places" type="button" value="Go">
+          </div>
+          <div>
+              <span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
+              <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
+          </div>
+        </div>
+      </div>
 
+      <div class="container">
+        <!-- Row of google map-->
+        <div class="map row" id="step">
+            <div class="col-md-12">
+                <div id="map"></div>
+            </div>
         </div>
 
-        <div id="map" class="col-sm-8"></div>
-
-        <div class="col-sm-2">
-            <p>Detail</p>
+        <!-- Row of input data according to the user's choice-->
+        <div id="inputWish" data-bind="visible: inputWish">
+            <div class="row">
+                <div class="col-md-12">
+                        <h4>Let's plan your dream for INTRODUZIR NOME DO LOCAL</h4>
+                </div>
+            </div>
+            <br>
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <div>
+                            <h6>Step 1: Choose a date</h6>
+                            <input type="date" name="dayD">
+                        </div>
+                        <br>
+                        <div>
+                            <h6>Step 2: Read something (optional)</h6>
+                            <ul>
+                                <li>Link wikipedia</li>
+                                <li>Link tripadvisor</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4"><h6>1. Step</h6></div>
+                    <div class="form-group col-md-4"><h6>1. Step</h6></div>
+                </div>
+            </form>
         </div>
-    </div>
 
+        <div class="row" id="inputAnchievement" data-bind="visible: inputAnchievement">
+            Anchievement
+        </div>
+
+    <!--scripts-->
     <script type='text/javascript' src='js/config.js'></script>
     <script type='text/javascript' src='js/script.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
 </body>
 </html>
