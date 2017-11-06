@@ -59,7 +59,10 @@
         <div id="inputWish" data-bind="visible: inputWish">
             <div class="row">
                 <div class="col-md-12">
-                        <h4>Let's plan your dream for INTRODUZIR NOME DO LOCAL</h4>
+                        <h4>
+                            <span>Let's plan your dream for </span>
+                            <span data-bind="text: chosenPlace"></span>
+                        </h4>
                 </div>
             </div>
             <br>
@@ -73,10 +76,10 @@
                         <br>
                         <div>
                             <h6>Step 2: Read something (optional)</h6>
-                            <ul>
-                                <li>Link wikipedia</li>
-                                <li>Link tripadvisor</li>
+                            <ul data-bind="foreach: wikipediaLinks">
+                                <li><a data-bind="attr: { href: url, title: title}"></a></li>
                             </ul>
+                            <span data-bind="text: wikiError"></span>
                         </div>
                     </div>
                     <div class="form-group col-md-4"><h6>1. Step</h6></div>

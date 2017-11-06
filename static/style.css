@@ -15,3 +15,7 @@ html, body {
 .map {
     margin-bottom: 32px;
 }
+
+#places-search {
+    width: 290px;
+}
