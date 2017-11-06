@@ -57,11 +57,12 @@
 
         <div data-bind="visible: step0">
             <h6>
-              <span>Step 1: </span>
+              <span>Step 0: </span>
               <span data-bind="text: title"></span>
               <span> is: </span>
-              <span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
-              <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
+              <span><input id='radio' type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
+              <span><input id='radio' type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
+              <br><br>
             </h6>
         </div>
 
@@ -70,31 +71,49 @@
         <div id="inputWish" data-bind="visible: inputWish">
             <div class="row">
                 <div class="col-md-12">
-                        <h4>
+                        <h5>
                             <span>Let's plan your dream for </span>
                             <span data-bind="text: title"></span>
-                        </h4>
+                        </h5>
                 </div>
             </div>
             <br>
             <form>
                 <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <div>
                             <h6>Step 1: Choose a date</h6>
                             <input type="date" name="dayD">
                         </div>
                         <br>
-                        <!--<div>
+                        <div>
                             <h6>Step 2: Read something (optional)</h6>
-                            <ul data-bind="foreach: wikipediaLinks">
-                                <li><a data-bind="attr: { href: url, title: title}"></a></li>
-                            </ul>
                             <span data-bind="text: wikiError"></span>
-                        </div>-->
+                            <ul class="wikiLinks" data-bind="foreach: wikipediaLinks">
+                                <li class="flex-item"><a target="_blank" data-bind="attr: {href: url}, text: title"></a></li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="form-group col-md-4"><h6>1. Step</h6></div>
-                    <div class="form-group col-md-4"><h6>1. Step</h6></div>
+                    <div class="form-group col-md-4">
+                        <div>
+                            <h6>Step 3: Total cost (Format: 22.18)</h6>
+                            <input type="number" min="0.00" max="10000.00" step="0.01" />
+                        </div>
+                        <div>
+                            <span>Tips: account entry, transportation, hosting, food, etc.</span>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-5">
+                        <div>
+                            <h6>Step 4: notes</h6>
+                            <span>What are your expectations? What do you want to do there? Detail your dream to make it palpable.</span>
+                        </div>
+                        <div>
+                            <textarea class="form-control" rows="5"></textarea>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Save this dream</button>
+                    </div>
                 </div>
             </form>
         </div>

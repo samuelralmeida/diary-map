@@ -17,7 +17,10 @@ var ChosenPlace = function(data) {
 
 var ViewModel = function() {
     var self = this;
+    // marker is result of google maps api search
     var marker;
+    // mark is a object that created from marker using knockoutJS
+    var mark;
 
     this.wishOrRealized = ko.observable();
     self.inputWish = ko.observable(false);
@@ -26,6 +29,9 @@ var ViewModel = function() {
     self.title = ko.observable();
     self.currentPlace = ko.observable();
     self.wishOrRealized = ko.observable();
+    this.wikipediaLinks = ko.observableArray([]);
+    this.wikiError = ko.observable();
+
 
 
     // Create a searchbox in order to execute a places search
@@ -39,6 +45,12 @@ var ViewModel = function() {
     // This function fires when the user selects a searchbox picklist item.
     // It will do a nearby search using the selected query string or place.
     function searchBoxPlaces(searchBox) {
+        // return layout as initial
+        document.getElementById("radio").checked = false;
+        self.step0(false);
+        self.inputAnchievement(false);
+        self.inputWish(false);
+
         var places = searchBox.getPlaces();
         if (places.length == 0) {
             window.alert('We did not find any places matching that search!');
@@ -147,16 +159,17 @@ var ViewModel = function() {
     }
 
     function checkMarker(marker) {
-        var mark = new ChosenPlace(marker);
+        mark = new ChosenPlace(marker);
         self.title(mark.title());
         self.step0(true);
-        this.scrollView('step');
+        //this.scrollView('step');
     }
 
     this.wishOrRealized.subscribe(function(value){
         if (value === 'wish') {
             this.inputAnchievement(false);
             this.inputWish(true);
+            this.searchUrl()
         } else if (value === 'realized'){
             this.inputAnchievement(true);
             this.inputWish(false);
@@ -164,11 +177,41 @@ var ViewModel = function() {
             this.inputAnchievement(false);
             this.inputWish(false);
         }
-        //this.showForm(newValue);
     }, this);
 
-    this.scrollView = function(value) {
-        document.getElementById(value).scrollIntoView();
+    this.scrollView = function(step) {
+        document.getElementById(step).scrollIntoView();
+    }
+
+    this.searchUrl = function(){
+        var wikiUrl =  "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + mark.title() + "&format=json&callback=wikiCallback";
+        console.log(wikiUrl)
+
+        var wikiRequestTimeout = setTimeout(function(){
+            this.wikiError("failed to get wikipedia resources");
+        }, 8000);
+
+        $.ajax({
+            url: wikiUrl,
+            dataType: "jsonp",
+            success: function(response) {
+                var articleList = response[1];
+                self.wikipediaLinks([]);
+                if (articleList === 0) {
+                    this.wikiError("not wikipedia articles was found");
+                } else {
+                    for (var i = 0; i < 2; i++) {
+                        var articleStr = articleList[i];
+                        console.log(articleStr);
+                        var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                        self.wikipediaLinks.push({'title': articleStr, 'url': url})
+                    };
+                }
+
+                //se a requisição tiver sucesso, limpa o que foi feito pela função wikiRequestTimeout
+                clearTimeout(wikiRequestTimeout);
+            }
+        })
     }
 
 };
