@@ -11,13 +11,21 @@ var Achievement = function(data) {
 };
 
 var ChosenPlace = function(data) {
-    this.chosenPlace = ko.observable(data.chosenPlace);
-    // recebe uma lista de objetos
-    this.wikipediaLinks = ko.observableArray(data.wikipediaLinks);
+    this.title = ko.observable(data.title);
+    this.position = ko.observable(data.position);
 }
 
 var ViewModel = function() {
     var self = this;
+    var marker;
+
+    this.wishOrRealized = ko.observable();
+    self.inputWish = ko.observable(false);
+    self.inputAnchievement = ko.observable(false);
+    self.step0 = ko.observable(false);
+    self.title = ko.observable();
+    self.currentPlace = ko.observable();
+    self.wishOrRealized = ko.observable();
 
 
     // Create a searchbox in order to execute a places search
@@ -66,7 +74,7 @@ var ViewModel = function() {
                 scaledSize: new google.maps.Size(25, 25)
             };
             // Create a marker for each place.
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
                 map: map,
                 title: place.name,
                 position: place.geometry.location,
@@ -82,6 +90,7 @@ var ViewModel = function() {
                     console.log("This infowindow already is on this marker!");
                 } else {
                   getPlacesDetails(this, placeInfoWindow);
+                  checkMarker(this);
                 }
             });
             //placeMarkers.push(marker);
@@ -135,6 +144,31 @@ var ViewModel = function() {
                 });
             }
         });
+    }
+
+    function checkMarker(marker) {
+        var mark = new ChosenPlace(marker);
+        self.title(mark.title());
+        self.step0(true);
+        this.scrollView('step');
+    }
+
+    this.wishOrRealized.subscribe(function(value){
+        if (value === 'wish') {
+            this.inputAnchievement(false);
+            this.inputWish(true);
+        } else if (value === 'realized'){
+            this.inputAnchievement(true);
+            this.inputWish(false);
+        } else {
+            this.inputAnchievement(false);
+            this.inputWish(false);
+        }
+        //this.showForm(newValue);
+    }, this);
+
+    this.scrollView = function(value) {
+        document.getElementById(value).scrollIntoView();
     }
 
 };

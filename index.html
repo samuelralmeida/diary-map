@@ -37,12 +37,12 @@
           <h1 class="display-3">Hello, memories!</h1>
           <p>Plan fantastic memories and never forget them again.</p>
           <div class="place-search">
-            <input id="places-search" type="text" placeholder="Select place and option">
+            <input id="places-search" type="text" placeholder="Type a place and select it in map">
             <input id="go-places" type="button" value="Go">
           </div>
           <div>
-              <span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
-              <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
+              <!--<span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
+              <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>-->
           </div>
         </div>
       </div>
@@ -55,13 +55,24 @@
             </div>
         </div>
 
+        <div data-bind="visible: step0">
+            <h6>
+              <span>Step 1: </span>
+              <span data-bind="text: title"></span>
+              <span> is: </span>
+              <span><input type="radio" name="wishDream" value="wish" data-bind="checked: wishOrRealized" />A wish </span>
+              <span><input type="radio" name="wishDream" value="realized" data-bind="checked: wishOrRealized" />An achievement </span>
+            </h6>
+        </div>
+
+
         <!-- Row of input data according to the user's choice-->
         <div id="inputWish" data-bind="visible: inputWish">
             <div class="row">
                 <div class="col-md-12">
                         <h4>
                             <span>Let's plan your dream for </span>
-                            <span data-bind="text: chosenPlace"></span>
+                            <span data-bind="text: title"></span>
                         </h4>
                 </div>
             </div>
@@ -74,13 +85,13 @@
                             <input type="date" name="dayD">
                         </div>
                         <br>
-                        <div>
+                        <!--<div>
                             <h6>Step 2: Read something (optional)</h6>
                             <ul data-bind="foreach: wikipediaLinks">
                                 <li><a data-bind="attr: { href: url, title: title}"></a></li>
                             </ul>
                             <span data-bind="text: wikiError"></span>
-                        </div>
+                        </div>-->
                     </div>
                     <div class="form-group col-md-4"><h6>1. Step</h6></div>
                     <div class="form-group col-md-4"><h6>1. Step</h6></div>
