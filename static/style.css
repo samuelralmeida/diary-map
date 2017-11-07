@@ -25,3 +25,9 @@ html, body {
     /*list-style-position: inside;*/
     -webkit-padding-start: 0px;
 }
+
+.result {
+    color: green;
+    width: 100%;
+    text-align: center;
+}

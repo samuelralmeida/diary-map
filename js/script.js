@@ -2,7 +2,12 @@ var googleKey = config.GOOGLE_KEY;
 var map;
 // model of wishes
 var Wish = function(data) {
-
+    this.wishName = ko.observable(data.wishName);
+    this.date = ko.observable(data.date);
+    this.cost = ko.observable(data.cost);
+    this.notes = ko.observable(data.notes);
+    this.place = ko.observable(data.place);
+    this.position = ko.observable(data.position);
 };
 
 // model of achievements
@@ -25,14 +30,21 @@ var ViewModel = function() {
     this.wishOrRealized = ko.observable();
     self.inputWish = ko.observable(false);
     self.inputAnchievement = ko.observable(false);
+    self.outcome = ko.observable(false);
+    self.result = ko.observable();
     self.step0 = ko.observable(false);
     self.title = ko.observable();
     self.currentPlace = ko.observable();
     self.wishOrRealized = ko.observable();
     this.wikipediaLinks = ko.observableArray([]);
-    this.wikiError = ko.observable();
+    self.wikiError = ko.observable();
 
-
+    function resetLayout() {
+        document.getElementById("radio").checked = false;
+        self.step0(false);
+        self.inputAnchievement(false);
+        self.inputWish(false);
+    }
 
     // Create a searchbox in order to execute a places search
     var searchBox = new google.maps.places.SearchBox(document.getElementById('places-search'));
@@ -46,10 +58,9 @@ var ViewModel = function() {
     // It will do a nearby search using the selected query string or place.
     function searchBoxPlaces(searchBox) {
         // return layout as initial
-        document.getElementById("radio").checked = false;
-        self.step0(false);
-        self.inputAnchievement(false);
-        self.inputWish(false);
+        self.outcome(false);
+        self.result();
+        resetLayout();
 
         var places = searchBox.getPlaces();
         if (places.length == 0) {
@@ -185,10 +196,9 @@ var ViewModel = function() {
 
     this.searchUrl = function(){
         var wikiUrl =  "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + mark.title() + "&format=json&callback=wikiCallback";
-        console.log(wikiUrl)
 
         var wikiRequestTimeout = setTimeout(function(){
-            this.wikiError("failed to get wikipedia resources");
+            self.wikiError("failed to get wikipedia resources");
         }, 8000);
 
         $.ajax({
@@ -197,12 +207,11 @@ var ViewModel = function() {
             success: function(response) {
                 var articleList = response[1];
                 self.wikipediaLinks([]);
-                if (articleList === 0) {
-                    this.wikiError("not wikipedia articles was found");
+                if (articleList.length === 0) {
+                    self.wikiError("not wikipedia articles was found");
                 } else {
                     for (var i = 0; i < 2; i++) {
                         var articleStr = articleList[i];
-                        console.log(articleStr);
                         var url = 'http://en.wikipedia.org/wiki/' + articleStr;
                         self.wikipediaLinks.push({'title': articleStr, 'url': url})
                     };
@@ -212,6 +221,48 @@ var ViewModel = function() {
                 clearTimeout(wikiRequestTimeout);
             }
         })
+    }
+
+    // varibles to wish input form
+    self.wishName = ko.observable();
+    self.date = ko.observable();
+    self.cost = ko.observable();
+    self.notes = ko.observable();
+    // function to save and reset form
+    this.saveWish = function(formElement) {
+        var data = {
+            wishName: self.wishName(),
+            date: self.date(),
+            cost: self.cost(),
+            notes: self.notes(),
+            place: mark.title(),
+            position: mark.position()
+        }
+        var wish = new Wish(data);
+        var jsonData = ko.toJSON(wish)
+
+        var existingEntries = JSON.parse(localStorage.getItem("allWishes"));
+        if(existingEntries == null) existingEntries = [];
+        localStorage.setItem(self.wishName(), jsonData);
+        existingEntries.push(jsonData);
+        localStorage.setItem("allWishes", JSON.stringify(existingEntries));
+
+        console.log(localStorage.getItem("allWishes"));
+            // Last entry inserted
+        console.log(localStorage.getItem(self.wishName()));
+
+        reset();
+
+        function reset() {
+            self.wishName(null);
+            self.date(null);
+            self.cost(null);
+            self.notes(null);
+            self.result('Your dream has been saved. Make it happen!')
+            self.outcome(true);
+            resetLayout();
+        }
+
     }
 
 };
