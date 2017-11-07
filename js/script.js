@@ -1,5 +1,6 @@
 var googleKey = config.GOOGLE_KEY;
 var map;
+var sidebar;
 // model of wishes
 var Wish = function(data) {
     this.wishName = ko.observable(data.wishName);
@@ -239,13 +240,13 @@ var ViewModel = function() {
             position: mark.position()
         }
         var wish = new Wish(data);
-        var jsonData = ko.toJSON(wish)
+        var jsonData = ko.toJS(wish)
 
         var existingEntries = JSON.parse(localStorage.getItem("allWishes"));
         if(existingEntries == null) existingEntries = [];
         localStorage.setItem(self.wishName(), jsonData);
         existingEntries.push(jsonData);
-        localStorage.setItem("allWishes", JSON.stringify(existingEntries));
+        localStorage.setItem("allWishes", ko.toJSON(existingEntries));
 
         console.log(localStorage.getItem("allWishes"));
             // Last entry inserted
@@ -263,6 +264,17 @@ var ViewModel = function() {
             resetLayout();
         }
 
+    }
+
+    this.wishList = ko.observableArray([]);
+    this.showWishes = function() {
+        if (sidebar === true) {
+            var allWishes = JSON.parse(localStorage.getItem("allWishes"));
+            allWishes.forEach(function(wishItem) {
+                self.wishList.push(wishItem);
+            })
+            console.log(self.wishList());
+        }
     }
 
 };
@@ -285,7 +297,14 @@ window.addEventListener('load',function(){
     document.body.appendChild(script);
 });
 
-$("#menu-toggle").click(function(e) {
+$("#menu-toggle1").click(function(e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
+    sidebar = $("#wrapper").hasClass("toggled")
+});
+
+$("#menu-toggle2").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+    sidebar = $("#wrapper").hasClass("toggled")
 });

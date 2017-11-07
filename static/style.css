@@ -32,6 +32,14 @@ html, body {
     text-align: center;
 }
 
+.wish-names {
+    color: white;
+}
+
+.sidebar-header {
+  padding: 20px
+}
+
 /*sidebar*/
 body {
   overflow-x: hidden;

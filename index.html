@@ -15,33 +15,11 @@
 
       <!-- Sidebar -->
       <div id="sidebar-wrapper">
-          <ul class="sidebar-nav">
-              <li class="sidebar-brand">
-                  <a href="#">
-                      Start Bootstrap
-                  </a>
-              </li>
-              <li>
-                  <a href="#">Dashboard</a>
-              </li>
-              <li>
-                  <a href="#">Shortcuts</a>
-              </li>
-              <li>
-                  <a href="#">Overview</a>
-              </li>
-              <li>
-                  <a href="#">Events</a>
-              </li>
-              <li>
-                  <a href="#">About</a>
-              </li>
-              <li>
-                  <a href="#">Services</a>
-              </li>
-              <li>
-                  <a href="#">Contact</a>
-              </li>
+          <div class="wish-names sidebar-header">
+              <h3>Your wishes</h3>
+          </div>
+          <ul data-bind="foreach: wishList">
+              <li class="wish-names" data-bind="text: wishName"></li>
           </ul>
       </div>
       <!-- /#sidebar-wrapper -->
@@ -59,10 +37,10 @@
               <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item">
-                    <a class="nav-link" href="#">View wishes</a>
+                    <a class="nav-link" href="#menu-toggle" id="menu-toggle1" data-bind="click: showWishes">View wishes</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#">Dreams come true</a>
+                    <a class="nav-link" href="#menu-toggle" id="menu-toggle2">Dreams come true</a>
                   </li>
                 </ul>
               </div>
@@ -165,7 +143,6 @@
                 </div>
               </div>
             </main>
-              <a href="#menu-toggle" class="btn btn-secondary" id="menu-toggle">Toggle Menu</a>
           </div>
       </div>
       <!-- /#page-content-wrapper -->
