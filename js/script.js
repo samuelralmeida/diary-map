@@ -284,3 +284,8 @@ window.addEventListener('load',function(){
     script.setAttribute('async','');
     document.body.appendChild(script);
 });
+
+$("#menu-toggle").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").toggleClass("toggled");
+});
