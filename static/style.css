@@ -22,8 +22,11 @@ html, body {
 
 .wikiLinks {
     list-style-type: none;
-    /*list-style-position: inside;*/
     -webkit-padding-start: 0px;
+}
+
+.wish-ul {
+    list-style-type: none;
 }
 
 .result {

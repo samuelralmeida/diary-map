@@ -18,8 +18,8 @@
           <div class="wish-names sidebar-header">
               <h3>Your wishes</h3>
           </div>
-          <ul data-bind="foreach: wishList">
-              <li class="wish-names" data-bind="text: wishName"></li>
+          <ul class="wish-ul" data-bind="foreach: wishList">
+              <li class="wish-names" data-bind="text: wishName, click: $parent.setWish"></li>
           </ul>
       </div>
       <!-- /#sidebar-wrapper -->
@@ -136,6 +136,18 @@
                             </div>
                         </div>
                     </form>
+                </div>
+
+                <div id="showTheWish" data-bind="visible: showTheWish">
+
+                    <div data-bind="with: currentWish">
+                        <h2 data-bind="text: wishName"></h2>
+                        <div data-bind="text: cost"></div>
+                        <div data-bind="text: date"></div>
+                        <div data-bind="text: notes"></div>
+
+                    </div>
+
                 </div>
 
                 <div class="row" id="inputAnchievement" data-bind="visible: inputAnchievement">

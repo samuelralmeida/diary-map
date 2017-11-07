@@ -23,6 +23,8 @@ var ChosenPlace = function(data) {
 
 var ViewModel = function() {
     var self = this;
+    // store markers that has been loaded from localstorage
+    var markers = [];
     // marker is result of google maps api search
     var marker;
     // mark is a object that created from marker using knockoutJS
@@ -30,6 +32,7 @@ var ViewModel = function() {
 
     this.wishOrRealized = ko.observable();
     self.inputWish = ko.observable(false);
+    self.showTheWish = ko.observable(false);
     self.inputAnchievement = ko.observable(false);
     self.outcome = ko.observable(false);
     self.result = ko.observable();
@@ -45,6 +48,7 @@ var ViewModel = function() {
         self.step0(false);
         self.inputAnchievement(false);
         self.inputWish(false);
+        self.showTheWish(false)
     }
 
     // Create a searchbox in order to execute a places search
@@ -209,7 +213,7 @@ var ViewModel = function() {
                 var articleList = response[1];
                 self.wikipediaLinks([]);
                 if (articleList.length === 0) {
-                    self.wikiError("not wikipedia articles was found");
+                    self.wikiError("not wikipedia articles was found, verificar erro");
                 } else {
                     for (var i = 0; i < 2; i++) {
                         var articleStr = articleList[i];
@@ -266,16 +270,85 @@ var ViewModel = function() {
 
     }
 
+    function showListings() {
+      var bounds = new google.maps.LatLngBounds();
+      // Extend the boundaries of the map for each marker and display the marker
+      for (var i = 0; i < markers.length; i++) {
+          markers[i].setMap(map);
+          bounds.extend(markers[i].position);
+      }
+      map.fitBounds(bounds);
+    }
+
+    // This function will loop through the listings and hide them all.
+    function hideMarkers(markers) {
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+      }
+    }
+
     this.wishList = ko.observableArray([]);
     this.showWishes = function() {
         if (sidebar === true) {
+            self.wishList([])
             var allWishes = JSON.parse(localStorage.getItem("allWishes"));
-            allWishes.forEach(function(wishItem) {
-                self.wishList.push(wishItem);
-            })
-            console.log(self.wishList());
+            if (allWishes === null) {
+                console.log('criar uma forma de checar wishList no html')
+            } else {
+                allWishes.forEach(function(wishItem) {
+                    self.wishList.push(wishItem);
+                })
+                wishesMarkers(self.wishList())
+                showListings()
+            }
+        } else {
+           self.showTheWish(false);
+           hideMarkers(markers);
         }
     }
+
+    //create diferent icon to marker
+    function makeMarkerIcon(markerColor) {
+        var markerImage = new google.maps.MarkerImage(
+            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+            '|40|_|%E2%80%A2',
+            new google.maps.Size(21, 34),
+            new google.maps.Point(0, 0),
+            new google.maps.Point(10, 34),
+            new google.maps.Size(21,34));
+        return markerImage;
+    }
+
+    this.currentWish = ko.observable();
+    function wishesMarkers(wishList) {
+        var wishIcon = makeMarkerIcon('0091ff');
+        for (var i = 0; i < wishList.length; i++) {
+          var theWish = wishList[i];
+
+          var marker = new google.maps.Marker({
+              position: theWish.position,
+              icon: wishIcon,
+              title: theWish.place,
+              wishName: theWish.wishName,
+              date: theWish.date,
+              cost: theWish.cost,
+              notes: theWish.notes,
+              animation: google.maps.Animation.DROP,
+              id: i
+          });
+          marker.addListener('click', function() {
+              self.showTheWish(true);
+              self.currentWish(this);
+          });
+          markers.push(marker);
+        }
+    }
+
+    this.setWish = function(clickedWish) {
+        console.log(clickedWish);
+        self.showTheWish(true);
+        self.currentWish(clickedWish)
+    };
 
 };
 
