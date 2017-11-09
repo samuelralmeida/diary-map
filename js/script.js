@@ -22,15 +22,16 @@ var Marker = function(data) {
 var ViewModel = function() {
   var self = this;
 
+  // Create a new blank array for all the listing markers.
+  var markers = [];
+
   // Create placemarkers array to use in multiple functions to have control
   // over the number of places that show.
   var placeMarkers = [];
 
-  // control how menu is visible
+  //CONTROL SIDEBA MENU
   this.searches = ko.observable(false)
   this.saves = ko.observable(false)
-
-  //CONTROL SIDEBAR
   var sidebar = null;
   $("#menu-toggle1").click(function(e) {
     if (sidebar === 'searches') {
@@ -138,6 +139,7 @@ var ViewModel = function() {
         } else {
           getPlacesDetails(this, placeInfoWindow);
           self.currentMarker(this);
+          wikiSearch(this);
         }
       });
       //placeMarkers.push(marker);
@@ -199,20 +201,56 @@ var ViewModel = function() {
     });
   }
 
+  // list all result by search to user find a place easly
   this.markersList = ko.observableArray([]);
   function listResult(placesSearched) {
     self.markersList([]);
     placesSearched.forEach(function(place){
       self.markersList.push(place)
     })
-    console.log(self.markersList)
   }
 
-  this.setMarker = function(clickedMaker) {
-      self.currentMarker(clickedMaker)
+  // change cuurent marker view
+  this.setMarker = function(clickedMarker) {
+      self.currentMarker(clickedMarker)
+      wikiSearch(clickedMarker);
   };
-};
 
+  // use wikipedia API to show articles about place
+  this.wikiMsg = ko.observable();
+  this.wikiLinks = ko.observableArray([]);
+  function wikiSearch(marker) {
+    var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search="
+      + marker.title + "&format=json&callback=wikiCallback";
+
+    var wikiRequestTimeout = setTimeout(function(){
+        self.wikiMsg("failed to get wikipedia resources");
+    }, 8000);
+
+    self.wikiLinks([]);
+    $.ajax({
+        url: wikiUrl,
+        dataType: "jsonp",
+        success: function(response) {
+            var articleList = response[1];
+            if (articleList.length === 0) {
+              self.wikiMsg("not wikipedia articles was found");
+            } else {
+                for (var i = 0; i < 2; i++) {
+                    var articleStr = articleList[i];
+                    var url = 'http://en.wikipedia.org/wiki/' + articleStr;
+                    self.wikiMsg("Wikipedia Links");
+                    self.wikiLinks.push({'title': articleStr, 'url': url})
+                };
+            }
+
+            //se a requisição tiver sucesso, limpa o que foi feito pela função wikiRequestTimeout
+            clearTimeout(wikiRequestTimeout);
+        }
+    })
+  }
+
+};
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -19.925382, lng: -43.942943},
@@ -231,15 +269,3 @@ window.addEventListener('load',function(){
     script.setAttribute('async','');
     document.body.appendChild(script);
 });
-
-/*$("#menu-toggle1").click(function(e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
-    sidebar = $("#wrapper").hasClass("toggled")
-});
-
-$("#menu-toggle2").click(function(e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
-    sidebar = $("#wrapper").hasClass("toggled")
-});*/

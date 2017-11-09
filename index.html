@@ -27,9 +27,9 @@
           <div class="wish-names sidebar-header">
               <h3>Saves</h3>
           </div>
-          <<ul class="wish-ul" data-bind="foreach: markersList">
+          <!--<<ul class="wish-ul" data-bind="foreach: markersList">
               <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
-          </ul>
+          </ul>-->
         </div>
       </div>
 
@@ -80,10 +80,25 @@
                 </div>
 
                 <div class="row">
-                  <div data-bind="with: currentMarker">
-                    <p data-bind="text: title"></p>
-                    <p data-bind="text: position"></p>
-                    <p data-bind="text: id"></p>
+                  <div class="col-md-12">
+                    <div data-bind="with: currentMarker">
+                      <p data-bind="text: title"></p>
+                      <p data-bind="text: position"></p>
+                      <p data-bind="text: id"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div>
+                      <h6 data-bind="text: wikiMsg"></h6>
+                    </div>
+                    <div>
+                      <ul data-bind="foreach: wikiLinks">
+                        <li><a target="_blank" data-bind="attr: {href: url}, text: title"></a></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
