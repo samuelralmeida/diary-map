@@ -35,8 +35,8 @@ html, body {
     text-align: center;
 }
 
-.wish-names {
-    color: white;
+.btn {
+    width: 100%;
 }
 
 .sidebar-header {

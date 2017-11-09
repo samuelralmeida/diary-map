@@ -1,4 +1,5 @@
 var googleKey = config.GOOGLE_KEY;
+var nytKey = config.NYT_KEY;
 var map;
 //control sidebar is enable or not
 var sidebar;
@@ -89,7 +90,7 @@ var ViewModel = function() {
   // This function fires when the user selects a searchbox picklist item.
   // It will do a nearby search using the selected query string or place.
   function searchBoxPlaces(searchBox) {
-    self.currentMarker(null)
+    resetLayout()
     var places = searchBox.getPlaces();
     // For each place, get the icon, name and location.
     createMarkersForPlaces(places);
@@ -101,7 +102,7 @@ var ViewModel = function() {
   // This function firest when the user select "go" on the places search.
   // It will do a nearby search using the entered query string or place.
   function textSearchPlaces() {
-    self.currentMarker(null)
+    resetLayout()
     var bounds = map.getBounds();
     var placesService = new google.maps.places.PlacesService(map);
     placesService.textSearch({
@@ -113,6 +114,16 @@ var ViewModel = function() {
       }
     });
   }
+
+  function resetLayout() {
+    self.currentMarker(null);
+    self.buttons(false);
+    self.wikiMsg(null);
+    self.wikiLinks(null);
+    self.nytMsg(null);
+    self.nytLinks(null);
+  }
+
 
   //CREATE MARKERS AND THEM DETAILS
   this.currentMarker = ko.observable();
@@ -140,6 +151,8 @@ var ViewModel = function() {
           getPlacesDetails(this, placeInfoWindow);
           self.currentMarker(this);
           wikiSearch(this);
+          nytSearch(this)
+          self.buttons(true);
         }
       });
       //placeMarkers.push(marker);
@@ -214,6 +227,8 @@ var ViewModel = function() {
   this.setMarker = function(clickedMarker) {
       self.currentMarker(clickedMarker)
       wikiSearch(clickedMarker);
+      nytSearch(clickedMarker)
+      self.buttons(true);
   };
 
   // use wikipedia API to show articles about place
@@ -224,7 +239,7 @@ var ViewModel = function() {
       + marker.title + "&format=json&callback=wikiCallback";
 
     var wikiRequestTimeout = setTimeout(function(){
-        self.wikiMsg("failed to get wikipedia resources");
+        self.wikiMsg("Failed to get Wikipedia resources");
     }, 8000);
 
     self.wikiLinks([]);
@@ -234,13 +249,19 @@ var ViewModel = function() {
         success: function(response) {
             var articleList = response[1];
             if (articleList.length === 0) {
-              self.wikiMsg("not wikipedia articles was found");
+              self.wikiMsg("Not wikipedia articles was found");
             } else {
-                for (var i = 0; i < 2; i++) {
+                for (var i = 0; i < articleList.length; i++) {
                     var articleStr = articleList[i];
                     var url = 'http://en.wikipedia.org/wiki/' + articleStr;
                     self.wikiMsg("Wikipedia Links");
-                    self.wikiLinks.push({'title': articleStr, 'url': url})
+                    self.wikiLinks.push({
+                      'title': articleStr,
+                      'url': url
+                    })
+                    if (i === 4) {
+                      break
+                    }
                 };
             }
 
@@ -249,6 +270,49 @@ var ViewModel = function() {
         }
     })
   }
+
+  this.nytMsg = ko.observable();
+  this.nytLinks = ko.observableArray([]);
+  function nytSearch(marker) {
+    var nytUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +
+      marker.title + '&sort=newest&api-key=' + nytKey;
+
+    self.nytLinks([]);
+    $.getJSON(nytUrl, function(data) {
+
+        articles = data.response.docs;
+        if (articles.length === 0) {
+          self.nytMsg("Not New York Times articles was found");
+        } else {
+          for (var i = 0; i < articles.length; i++) {
+              var article = articles[i];
+              self.nytMsg("New York Times Links");
+              self.nytLinks.push({
+                'title': article.headline.main,
+                'url': article.web_url,
+                'snippet': article.snippet
+              })
+              if (i === 4) {
+                break
+              }
+          }
+        };
+    }).fail(function(e){
+        self.nytMsg("Failed to get New York Times resources");
+    });
+
+  }
+
+  // control buttons
+  this.buttons = ko.observable(false);
+  this.saveWish = function(marker) {
+    console.log(marker.currentMarker().title);
+  }
+
+  this.saveDream = function(marker) {
+    console.log(marker.currentMarker().title);
+  }
+
 
 };
 function initMap() {

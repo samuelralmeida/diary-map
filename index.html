@@ -11,15 +11,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-  <div id="wrapper" class="">
+  <div id="wrapper">
 
       <!-- Sidebar -->
       <div id="sidebar-wrapper">
         <div data-bind="visible: searches">
-          <div class="wish-names sidebar-header">
+          <div class="sidebar-header">
               <h3>Search Results</h3>
           </div>
-          <<ul class="wish-ul" data-bind="foreach: markersList">
+          <ul class="wish-ul" data-bind="foreach: markersList">
               <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
           </ul>
         </div>
@@ -82,17 +82,17 @@
                 <div class="row">
                   <div class="col-md-12">
                     <div data-bind="with: currentMarker">
-                      <p data-bind="text: title"></p>
-                      <p data-bind="text: position"></p>
-                      <p data-bind="text: id"></p>
+                      <h4 data-bind="text: title"></h4>
                     </div>
+                    <hr>
                   </div>
                 </div>
 
                 <div class="row">
-                  <div class="col-md-12">
+
+                  <div class="col-md-2">
                     <div>
-                      <h6 data-bind="text: wikiMsg"></h6>
+                      <p data-bind="text: wikiMsg"></p>
                     </div>
                     <div>
                       <ul data-bind="foreach: wikiLinks">
@@ -100,6 +100,35 @@
                       </ul>
                     </div>
                   </div>
+
+                  <div class="col-md-8">
+                    <div>
+                      <p data-bind="text: nytMsg"></p>
+                    </div>
+                    <div>
+                      <ul data-bind="foreach: nytLinks">
+                        <li>
+                          <a target="_blank" data-bind="attr: {href: url}, text: title"></a>
+                          <p data-bind="text: snippet"></p>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="col-md-2">
+                    <div data-bind="with: currentMarker">
+                      <p>
+                        <span data-bind="text: title"></span>
+                        <span> is</span>
+                      </p>
+                    </div>
+                    <div data-bind="visible: buttons">
+                      <button type="button" class="btn btn-primary btn-lg" data-bind="click: saveWish">A dream to realize</button>
+                      <br><br>
+                      <button type="button" class="btn btn-primary btn-lg" data-bind="click: saveDream">A dream come true</button>
+                    </div>
+                  </div>
+
                 </div>
 
                 <!--<div class="result" data-bind="visible: outcome, text: result"></div>-->
