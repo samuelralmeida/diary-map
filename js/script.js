@@ -1,6 +1,6 @@
 var googleKey = config.GOOGLE_KEY;
 var map;
-
+//control sidebar is enable or not
 var sidebar;
 
 // model of wishes
@@ -20,97 +20,138 @@ var Marker = function(data) {
 }
 
 var ViewModel = function() {
-    var self = this;
+  var self = this;
 
-    // Create placemarkers array to use in multiple functions to have control
-    // over the number of places that show.
-    var placeMarkers = [];
-    //control sidebar is enable or not
+  // Create placemarkers array to use in multiple functions to have control
+  // over the number of places that show.
+  var placeMarkers = [];
 
-    //SEARCH SYSTEM
+  // control how menu is visible
+  this.searches = ko.observable(false)
+  this.saves = ko.observable(false)
 
-    // Create a searchbox in order to execute a places search
-    var searchBox = new google.maps.places.SearchBox(
-      document.getElementById('places-search'));
-    // Bias the searchbox to within the bounds of the map.
-    searchBox.setBounds(map.getBounds());
-    // Listen for the event fired when the user selects a prediction from the
-    // picklist and retrieve more details for that place.
-    searchBox.addListener('places_changed', function() {
-      searchBoxPlaces(this);
-    });
-    // Listen for the event fired when the user selects a prediction and clicks
-    // "go" more details for that place.
-    document.getElementById('go-places').addEventListener(
-      'click', textSearchPlaces);
-
-    // This function fires when the user selects a searchbox picklist item.
-    // It will do a nearby search using the selected query string or place.
-    function searchBoxPlaces(searchBox) {
-      self.currentMarker(null)
-      var places = searchBox.getPlaces();
-      // For each place, get the icon, name and location.
-      createMarkersForPlaces(places);
-      if (places.length == 0) {
-        window.alert('We did not find any places matching that search!');
-      }
+  //CONTROL SIDEBAR
+  var sidebar = null;
+  $("#menu-toggle1").click(function(e) {
+    if (sidebar === 'searches') {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      sidebar = null
+    } else if (sidebar === null) {
+      self.saves(false);
+      self.searches(true);
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      sidebar = 'searches'
+    } else if (sidebar === 'saves') {
+      self.saves(false);
+      self.searches(true);
+      sidebar = 'searches'
     }
+  });
 
-    // This function firest when the user select "go" on the places search.
-    // It will do a nearby search using the entered query string or place.
-    function textSearchPlaces() {
-      self.currentMarker(null)
-      var bounds = map.getBounds();
-      var placesService = new google.maps.places.PlacesService(map);
-      placesService.textSearch({
-        query: document.getElementById('places-search').value,
-        bounds: bounds
-      }, function(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-          createMarkersForPlaces(results);
+  $("#menu-toggle2").click(function(e) {
+    if (sidebar === 'saves') {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      sidebar = null
+    } else if (sidebar === null) {
+      self.saves(true);
+      self.searches(false);
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      sidebar = 'saves'
+    } else if (sidebar === 'searches') {
+      self.saves(true);
+      self.searches(false);
+      sidebar = 'saves'
+    }
+  });
+
+  //SEARCH SYSTEM
+
+  // Create a searchbox in order to execute a places search
+  var searchBox = new google.maps.places.SearchBox(
+    document.getElementById('places-search'));
+  // Bias the searchbox to within the bounds of the map.
+  searchBox.setBounds(map.getBounds());
+  // Listen for the event fired when the user selects a prediction from the
+  // picklist and retrieve more details for that place.
+  searchBox.addListener('places_changed', function() {
+    searchBoxPlaces(this);
+  });
+  // Listen for the event fired when the user selects a prediction and clicks
+  // "go" more details for that place.
+  document.getElementById('go-places').addEventListener(
+    'click', textSearchPlaces);
+
+  // This function fires when the user selects a searchbox picklist item.
+  // It will do a nearby search using the selected query string or place.
+  function searchBoxPlaces(searchBox) {
+    self.currentMarker(null)
+    var places = searchBox.getPlaces();
+    // For each place, get the icon, name and location.
+    createMarkersForPlaces(places);
+    if (places.length == 0) {
+      window.alert('We did not find any places matching that search!');
+    }
+  }
+
+  // This function firest when the user select "go" on the places search.
+  // It will do a nearby search using the entered query string or place.
+  function textSearchPlaces() {
+    self.currentMarker(null)
+    var bounds = map.getBounds();
+    var placesService = new google.maps.places.PlacesService(map);
+    placesService.textSearch({
+      query: document.getElementById('places-search').value,
+      bounds: bounds
+    }, function(results, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        createMarkersForPlaces(results);
+      }
+    });
+  }
+
+  //CREATE MARKERS AND THEM DETAILS
+  this.currentMarker = ko.observable();
+  function createMarkersForPlaces(places) {
+    var placesSearched = []
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < places.length; i++) {
+      var place = places[i];
+
+      // Create a marker for each place.
+      var marker = new google.maps.Marker({
+        map: map,
+        title: place.name,
+        position: place.geometry.location,
+        id: place.place_id
+      });
+      // Create a single infowindow to be used with the place details information
+      // so that only one is open at once.
+      var placeInfoWindow = new google.maps.InfoWindow();
+      // If a marker is clicked, do a place details search on it in the next function.
+      marker.addListener('click', function() {
+        if (placeInfoWindow.marker == this) {
+          console.log("This infowindow already is on this marker!");
+        } else {
+          getPlacesDetails(this, placeInfoWindow);
+          self.currentMarker(this);
         }
       });
-    }
-
-    //CREATE MARKERS AND THEM DETAILS
-    this.currentMarker = ko.observable();
-    function createMarkersForPlaces(places) {
-      var placesSearched = []
-      var bounds = new google.maps.LatLngBounds();
-      for (var i = 0; i < places.length; i++) {
-        var place = places[i];
-
-        // Create a marker for each place.
-        var marker = new google.maps.Marker({
-          map: map,
-          title: place.name,
-          position: place.geometry.location,
-          id: place.place_id
-        });
-        // Create a single infowindow to be used with the place details information
-        // so that only one is open at once.
-        var placeInfoWindow = new google.maps.InfoWindow();
-        // If a marker is clicked, do a place details search on it in the next function.
-        marker.addListener('click', function() {
-          if (placeInfoWindow.marker == this) {
-            console.log("This infowindow already is on this marker!");
-          } else {
-            getPlacesDetails(this, placeInfoWindow);
-            self.currentMarker(this);
-          }
-        });
-        //placeMarkers.push(marker);
-        placesSearched.push(marker);
-        if (place.geometry.viewport) {
-          // Only geocodes have viewport.
-          bounds.union(place.geometry.viewport);
-        } else {
-          bounds.extend(place.geometry.location);
-        }
+      //placeMarkers.push(marker);
+      placesSearched.push(marker);
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
       }
-      map.fitBounds(bounds);
-      listResult(placesSearched);
     }
+    map.fitBounds(bounds);
+    listResult(placesSearched);
+  }
 
   // This is the PLACE DETAILS search - it's the most detailed so it's only
   // executed when a marker is selected, indicating the user wants more
@@ -170,39 +211,6 @@ var ViewModel = function() {
   this.setMarker = function(clickedMaker) {
       self.currentMarker(clickedMaker)
   };
-
-
-    /*
-    this.catList = ko.observableArray([])
-    initialCats.forEach(function(catItem){
-        self.catList.push(new Cat(catItem));
-
-    var Cat = function (data) {
-        this.clickCount = ko.observable(data.clickCount);
-        this.name = ko.observable(data.name);
-        this.nicknames = ko.observableArray(data.nicknames);
-        this.imgSrc = ko.observable(data.imgSrc);
-        this.imgAttribution = ko.observable(data.imgAttribution);
-
-        this.title = ko.computed(function(){
-            var title;
-            var clicks = this.clickCount();
-            if (clicks < 10) {
-                title = 'Newborn';
-            } else if (clicks < 50) {
-                title = 'Infant';
-            } else if (clicks < 100) {
-                title = 'child';
-            } else {
-                title = 'adult;'
-            }
-            return title
-        }, this)
-    }
-    */
-
-  //}
-
 };
 
 function initMap() {
@@ -224,7 +232,7 @@ window.addEventListener('load',function(){
     document.body.appendChild(script);
 });
 
-$("#menu-toggle1").click(function(e) {
+/*$("#menu-toggle1").click(function(e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
     sidebar = $("#wrapper").hasClass("toggled")
@@ -234,4 +242,4 @@ $("#menu-toggle2").click(function(e) {
     e.preventDefault();
     $("#wrapper").toggleClass("toggled");
     sidebar = $("#wrapper").hasClass("toggled")
-});
+});*/

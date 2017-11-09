@@ -15,12 +15,22 @@
 
       <!-- Sidebar -->
       <div id="sidebar-wrapper">
+        <div data-bind="visible: searches">
           <div class="wish-names sidebar-header">
               <h3>Search Results</h3>
           </div>
           <<ul class="wish-ul" data-bind="foreach: markersList">
               <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
           </ul>
+        </div>
+        <div data-bind="visible: saves">
+          <div class="wish-names sidebar-header">
+              <h3>Saves</h3>
+          </div>
+          <<ul class="wish-ul" data-bind="foreach: markersList">
+              <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
+          </ul>
+        </div>
       </div>
 
       <!-- /#sidebar-wrapper -->
@@ -38,10 +48,10 @@
               <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
                   <li class="nav-item">
-                    <a class="nav-link" href="#menu-toggle" id="menu-toggle1">Menu</a><!--data-bind="click: showWishes"-->
+                    <a class="nav-link" href="#menu-toggle" id="menu-toggle1">Search results</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#menu-toggle" id="menu-toggle2">Dreams come true</a>
+                    <a class="nav-link" href="#menu-toggle" id="menu-toggle2">Saves</a>
                   </li>
                 </ul>
               </div>
