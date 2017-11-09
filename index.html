@@ -140,13 +140,39 @@
 
                 <div id="showTheWish" data-bind="visible: showTheWish">
 
-                    <div data-bind="with: currentWish">
-                        <h2 data-bind="text: wishName"></h2>
-                        <div data-bind="text: cost"></div>
-                        <div data-bind="text: date"></div>
-                        <div data-bind="text: notes"></div>
-
+                    <div class="row">
+                        <div class="col-md-12">
+                        <div data-bind="with: currentWish">
+                            <h2 data-bind="text: wishName"></h2>
+                        </div>
+                      </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                        <div data-bind="with: currentWish">
+                            <p>
+                              <span>PLACE: </span>
+                              <span data-bind="text: place"></span>
+                            </p>
+                            <p>
+                              <span>COST: </span>
+                              <span data-bind="text: cost"></span>
+                            </p>
+                            <p>
+                              <span>DATE: </span>
+                              <span data-bind="text: date"></span>
+                            </p>
+                        </div>
+                      </div>
+
+                      <div class="col-md-6">
+                      <div data-bind="with: currentWish">
+                          <p>NOTES:</p>
+                          <p data-bind="text: notes"></p>
+                      </div>
+                    </div>
+                  </div>
 
                 </div>
 
