@@ -5,9 +5,7 @@ var map;
 var sidebar;
 
 // model of wishes
-var Wish = function(data) {
-
-};
+var Wish = function(data) {};
 
 // model of achievements
 var Achievement = function(data) {
@@ -303,14 +301,54 @@ var ViewModel = function() {
 
   }
 
+  //create diferent icon to marker
+  function makeMarkerIcon(markerColor) {
+      var markerImage = new google.maps.MarkerImage(
+          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+          '|40|_|%E2%80%A2',
+          new google.maps.Size(21, 34),
+          new google.maps.Point(0, 0),
+          new google.maps.Point(10, 34),
+          new google.maps.Size(21,34));
+      return markerImage;
+  }
+
   // control buttons
   this.buttons = ko.observable(false);
   this.saveWish = function(marker) {
-    console.log(marker.currentMarker().title);
+    var wishMarker;
+    var wishIcon = makeMarkerIcon('0091ff');
+    wishMarker = self.currentMarker();
+    wishMarker.setIcon(wishIcon);
+
+    var mark = {
+        title: wishMarker.title,
+        position: wishMarker.position,
+        icon: wishMarker.icon,
+        id: wishMarker.id
+    };
+
+    if (!localStorage.wishes) {
+        localStorage.wishes = JSON.stringify([]);
+    }
+    var data = JSON.parse(localStorage.wishes);
+    data.push(mark);
+    localStorage.wishes = JSON.stringify(data);
+
+    console.log(JSON.parse(localStorage.wishes));
+
+
+    /*var jsonData = ko.toJS(wishMarker)
+    var existingEntries = JSON.parse(localStorage.getItem("allWishes"));
+    if(existingEntries == null) existingEntries = [];
+    existingEntries.push(jsonData);
+    localStorage.setItem("allWishes", ko.toJSON(existingEntries));
+
+    console.log(localStorage.getItem("allWishes"));*/
   }
 
   this.saveDream = function(marker) {
-    console.log(marker.currentMarker().title);
+    console.log(marker.currentMarker());
   }
 
 
