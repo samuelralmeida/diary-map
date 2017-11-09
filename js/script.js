@@ -1,14 +1,11 @@
 var googleKey = config.GOOGLE_KEY;
 var map;
+
 var sidebar;
+
 // model of wishes
 var Wish = function(data) {
-    this.wishName = ko.observable(data.wishName);
-    this.date = ko.observable(data.date);
-    this.cost = ko.observable(data.cost);
-    this.notes = ko.observable(data.notes);
-    this.place = ko.observable(data.place);
-    this.position = ko.observable(data.position);
+
 };
 
 // model of achievements
@@ -16,339 +13,195 @@ var Achievement = function(data) {
 
 };
 
-var ChosenPlace = function(data) {
-    this.title = ko.observable(data.title);
-    this.position = ko.observable(data.position);
+var Marker = function(data) {
+  this.title = ko.observable(data.title);
+  this.position = ko.observable(data.position);
+  this.id = ko.observable(data.id);
 }
 
 var ViewModel = function() {
     var self = this;
-    // store markers that has been loaded from localstorage
-    var markers = [];
-    // marker is result of google maps api search
-    var marker;
-    // mark is a object that created from marker using knockoutJS
-    var mark;
 
-    this.wishOrRealized = ko.observable();
-    self.inputWish = ko.observable(false);
-    self.showTheWish = ko.observable(false);
-    self.inputAnchievement = ko.observable(false);
-    self.outcome = ko.observable(false);
-    self.result = ko.observable();
-    self.step0 = ko.observable(false);
-    self.title = ko.observable();
-    self.currentPlace = ko.observable();
-    self.wishOrRealized = ko.observable();
-    this.wikipediaLinks = ko.observableArray([]);
-    self.wikiError = ko.observable();
+    // Create placemarkers array to use in multiple functions to have control
+    // over the number of places that show.
+    var placeMarkers = [];
+    //control sidebar is enable or not
 
-    function resetLayout() {
-        document.getElementById("radio").checked = false;
-        self.step0(false);
-        self.inputAnchievement(false);
-        self.inputWish(false);
-        self.showTheWish(false)
-    }
+    //SEARCH SYSTEM
 
     // Create a searchbox in order to execute a places search
-    var searchBox = new google.maps.places.SearchBox(document.getElementById('places-search'));
+    var searchBox = new google.maps.places.SearchBox(
+      document.getElementById('places-search'));
     // Bias the searchbox to within the bounds of the map.
     searchBox.setBounds(map.getBounds());
-    searchBox.addListener('places_changed', function() {searchBoxPlaces(this);});
+    // Listen for the event fired when the user selects a prediction from the
+    // picklist and retrieve more details for that place.
+    searchBox.addListener('places_changed', function() {
+      searchBoxPlaces(this);
+    });
     // Listen for the event fired when the user selects a prediction and clicks
     // "go" more details for that place.
-    document.getElementById('go-places').addEventListener('click', textSearchPlaces);
+    document.getElementById('go-places').addEventListener(
+      'click', textSearchPlaces);
+
     // This function fires when the user selects a searchbox picklist item.
     // It will do a nearby search using the selected query string or place.
     function searchBoxPlaces(searchBox) {
-        // return layout as initial
-        self.outcome(false);
-        self.result();
-        resetLayout();
-
-        var places = searchBox.getPlaces();
-        if (places.length == 0) {
-            window.alert('We did not find any places matching that search!');
-        } else {
-            // For each place, get the icon, name and location.
-            createMarkersForPlaces(places);
-        }
+      self.currentMarker(null)
+      var places = searchBox.getPlaces();
+      // For each place, get the icon, name and location.
+      createMarkersForPlaces(places);
+      if (places.length == 0) {
+        window.alert('We did not find any places matching that search!');
+      }
     }
+
     // This function firest when the user select "go" on the places search.
     // It will do a nearby search using the entered query string or place.
     function textSearchPlaces() {
-        var bounds = map.getBounds();
-        var placesService = new google.maps.places.PlacesService(map);
-        placesService.textSearch({
-            query: document.getElementById('places-search').value,
-            bounds: bounds
-        }, function(results, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                createMarkersForPlaces(results);
-            }
-        });
+      self.currentMarker(null)
+      var bounds = map.getBounds();
+      var placesService = new google.maps.places.PlacesService(map);
+      placesService.textSearch({
+        query: document.getElementById('places-search').value,
+        bounds: bounds
+      }, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          createMarkersForPlaces(results);
+        }
+      });
     }
 
+    //CREATE MARKERS AND THEM DETAILS
+    this.currentMarker = ko.observable();
     function createMarkersForPlaces(places) {
-        var bounds = new google.maps.LatLngBounds();
-        for (var i = 0; i < places.length; i++) {
-            var place = places[i];
-            var icon = {
-                url: place.icon,
-                size: new google.maps.Size(35, 35),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(15, 34),
-                scaledSize: new google.maps.Size(25, 25)
-            };
-            // Create a marker for each place.
-            marker = new google.maps.Marker({
-                map: map,
-                title: place.name,
-                position: place.geometry.location,
-                animation: google.maps.Animation.DROP,
-                id: place.place_id
-            });
-            // Create a single infowindow to be used with the place details information
-            // so that only one is open at once.
-            var placeInfoWindow = new google.maps.InfoWindow();
-            // If a marker is clicked, do a place details search on it in the next function.
-            marker.addListener('click', function() {
-                if (placeInfoWindow.marker == this) {
-                    console.log("This infowindow already is on this marker!");
-                } else {
-                  getPlacesDetails(this, placeInfoWindow);
-                  checkMarker(this);
-                }
-            });
-            //placeMarkers.push(marker);
-            if (place.geometry.viewport) {
-                // Only geocodes have viewport.
-                bounds.union(place.geometry.viewport);
-              } else {
-                bounds.extend(place.geometry.location);
-              }
-      }
-      map.setZoom(10);
-      map.fitBounds(bounds);
-    }
-
-    function getPlacesDetails(marker, infowindow) {
-        var service = new google.maps.places.PlacesService(map);
-        service.getDetails({placeId: marker.id}, function(place, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                // Set the marker property on this infowindow so it isn't created again.
-                infowindow.marker = marker;
-                var innerHTML = '<div>';
-                if (place.name) {
-                    innerHTML += '<strong>' + place.name + '</strong>';
-                }
-                if (place.formatted_address) {
-                    innerHTML += '<br>' + place.formatted_address;
-                }
-                if (place.formatted_phone_number) {
-                    innerHTML += '<br>' + place.formatted_phone_number;
-                }
-                if (place.opening_hours) {
-                    innerHTML += '<br><br><strong>Hours:</strong><br>' +
-                    place.opening_hours.weekday_text[0] + '<br>' +
-                    place.opening_hours.weekday_text[1] + '<br>' +
-                    place.opening_hours.weekday_text[2] + '<br>' +
-                    place.opening_hours.weekday_text[3] + '<br>' +
-                    place.opening_hours.weekday_text[4] + '<br>' +
-                    place.opening_hours.weekday_text[5] + '<br>' +
-                    place.opening_hours.weekday_text[6];
-                }
-                if (place.photos) {
-                    innerHTML += '<br><br><img src="' + place.photos[0].getUrl(
-                        {maxHeight: 100, maxWidth: 200}) + '">';
-                }
-                innerHTML += '</div>';
-                infowindow.setContent(innerHTML);
-                infowindow.open(map, marker);
-                // Make sure the marker property is cleared if the infowindow is closed.
-                infowindow.addListener('closeclick', function() {
-                    infowindow.marker = null;
-                });
-            }
-        });
-    }
-
-    function checkMarker(marker) {
-        mark = new ChosenPlace(marker);
-        self.title(mark.title());
-        self.step0(true);
-        //this.scrollView('step');
-    }
-
-    this.wishOrRealized.subscribe(function(value){
-        if (value === 'wish') {
-            this.inputAnchievement(false);
-            this.inputWish(true);
-            this.searchUrl()
-        } else if (value === 'realized'){
-            this.inputAnchievement(true);
-            this.inputWish(false);
-        } else {
-            this.inputAnchievement(false);
-            this.inputWish(false);
-        }
-    }, this);
-
-    this.scrollView = function(step) {
-        document.getElementById(step).scrollIntoView();
-    }
-
-    this.searchUrl = function(){
-        var wikiUrl =  "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + mark.title() + "&format=json&callback=wikiCallback";
-
-        var wikiRequestTimeout = setTimeout(function(){
-            self.wikiError("failed to get wikipedia resources");
-        }, 8000);
-
-        $.ajax({
-            url: wikiUrl,
-            dataType: "jsonp",
-            success: function(response) {
-                var articleList = response[1];
-                self.wikipediaLinks([]);
-                if (articleList.length === 0) {
-                    self.wikiError("not wikipedia articles was found, verificar erro");
-                } else {
-                    for (var i = 0; i < 2; i++) {
-                        var articleStr = articleList[i];
-                        var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-                        self.wikipediaLinks.push({'title': articleStr, 'url': url})
-                    };
-                }
-
-                //se a requisição tiver sucesso, limpa o que foi feito pela função wikiRequestTimeout
-                clearTimeout(wikiRequestTimeout);
-            }
-        })
-    }
-
-    // varibles to wish input form
-    self.wishName = ko.observable();
-    self.date = ko.observable();
-    self.cost = ko.observable();
-    self.notes = ko.observable();
-    // function to save and reset form
-    this.saveWish = function(formElement) {
-        var data = {
-            wishName: self.wishName(),
-            date: self.date(),
-            cost: self.cost(),
-            notes: self.notes(),
-            place: mark.title(),
-            position: mark.position()
-        }
-        var wish = new Wish(data);
-        var jsonData = ko.toJS(wish)
-
-        var existingEntries = JSON.parse(localStorage.getItem("allWishes"));
-        if(existingEntries == null) existingEntries = [];
-        localStorage.setItem(self.wishName(), jsonData);
-        existingEntries.push(jsonData);
-        localStorage.setItem("allWishes", ko.toJSON(existingEntries));
-
-        console.log(localStorage.getItem("allWishes"));
-            // Last entry inserted
-        console.log(localStorage.getItem(self.wishName()));
-
-        reset();
-
-        function reset() {
-            self.wishName(null);
-            self.date(null);
-            self.cost(null);
-            self.notes(null);
-            self.result('Your dream has been saved. Make it happen!')
-            self.outcome(true);
-            resetLayout();
-        }
-
-    }
-
-    function showListings() {
+      var placesSearched = []
       var bounds = new google.maps.LatLngBounds();
-      // Extend the boundaries of the map for each marker and display the marker
-      for (var i = 0; i < markers.length; i++) {
-          markers[i].setMap(map);
-          bounds.extend(markers[i].position);
+      for (var i = 0; i < places.length; i++) {
+        var place = places[i];
+
+        // Create a marker for each place.
+        var marker = new google.maps.Marker({
+          map: map,
+          title: place.name,
+          position: place.geometry.location,
+          id: place.place_id
+        });
+        // Create a single infowindow to be used with the place details information
+        // so that only one is open at once.
+        var placeInfoWindow = new google.maps.InfoWindow();
+        // If a marker is clicked, do a place details search on it in the next function.
+        marker.addListener('click', function() {
+          if (placeInfoWindow.marker == this) {
+            console.log("This infowindow already is on this marker!");
+          } else {
+            getPlacesDetails(this, placeInfoWindow);
+            self.currentMarker(this);
+          }
+        });
+        //placeMarkers.push(marker);
+        placesSearched.push(marker);
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
       }
       map.fitBounds(bounds);
+      listResult(placesSearched);
     }
 
-    // This function will loop through the listings and hide them all.
-    function hideMarkers(markers) {
-      for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+  // This is the PLACE DETAILS search - it's the most detailed so it's only
+  // executed when a marker is selected, indicating the user wants more
+  // details about that place.
+  function getPlacesDetails(marker, infowindow) {
+    var service = new google.maps.places.PlacesService(map);
+    service.getDetails({
+      placeId: marker.id
+    }, function(place, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        // Set the marker property on this infowindow so it isn't created again.
+        infowindow.marker = marker;
+        var innerHTML = '<div>';
+        if (place.name) {
+          innerHTML += '<strong>' + place.name + '</strong>';
+        }
+        if (place.formatted_address) {
+          innerHTML += '<br>' + place.formatted_address;
+        }
+        if (place.formatted_phone_number) {
+          innerHTML += '<br>' + place.formatted_phone_number;
+        }
+        if (place.opening_hours) {
+          innerHTML += '<br><br><strong>Hours:</strong><br>' +
+              place.opening_hours.weekday_text[0] + '<br>' +
+              place.opening_hours.weekday_text[1] + '<br>' +
+              place.opening_hours.weekday_text[2] + '<br>' +
+              place.opening_hours.weekday_text[3] + '<br>' +
+              place.opening_hours.weekday_text[4] + '<br>' +
+              place.opening_hours.weekday_text[5] + '<br>' +
+              place.opening_hours.weekday_text[6];
+        }
+        if (place.photos) {
+          innerHTML += '<br><br><img src="' + place.photos[0].getUrl(
+              {maxHeight: 100, maxWidth: 200}) + '">';
+        }
+        innerHTML += '</div>';
+        infowindow.setContent(innerHTML);
+        infowindow.open(map, marker);
+        // Make sure the marker property is cleared if the infowindow is closed.
+        infowindow.addListener('closeclick', function() {
+          infowindow.marker = null;
+        });
       }
-    }
+    });
+  }
 
-    this.wishList = ko.observableArray([]);
-    this.showWishes = function() {
-        if (sidebar === true) {
-            self.wishList([])
-            var allWishes = JSON.parse(localStorage.getItem("allWishes"));
-            if (allWishes === null) {
-                console.log('criar uma forma de checar wishList no html')
+  this.markersList = ko.observableArray([]);
+  function listResult(placesSearched) {
+    self.markersList([]);
+    placesSearched.forEach(function(place){
+      self.markersList.push(place)
+    })
+    console.log(self.markersList)
+  }
+
+  this.setMarker = function(clickedMaker) {
+      self.currentMarker(clickedMaker)
+  };
+
+
+    /*
+    this.catList = ko.observableArray([])
+    initialCats.forEach(function(catItem){
+        self.catList.push(new Cat(catItem));
+
+    var Cat = function (data) {
+        this.clickCount = ko.observable(data.clickCount);
+        this.name = ko.observable(data.name);
+        this.nicknames = ko.observableArray(data.nicknames);
+        this.imgSrc = ko.observable(data.imgSrc);
+        this.imgAttribution = ko.observable(data.imgAttribution);
+
+        this.title = ko.computed(function(){
+            var title;
+            var clicks = this.clickCount();
+            if (clicks < 10) {
+                title = 'Newborn';
+            } else if (clicks < 50) {
+                title = 'Infant';
+            } else if (clicks < 100) {
+                title = 'child';
             } else {
-                allWishes.forEach(function(wishItem) {
-                    self.wishList.push(wishItem);
-                })
-                wishesMarkers(self.wishList())
-                showListings()
+                title = 'adult;'
             }
-        } else {
-           self.showTheWish(false);
-           hideMarkers(markers);
-        }
+            return title
+        }, this)
     }
+    */
 
-    //create diferent icon to marker
-    function makeMarkerIcon(markerColor) {
-        var markerImage = new google.maps.MarkerImage(
-            'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-            '|40|_|%E2%80%A2',
-            new google.maps.Size(21, 34),
-            new google.maps.Point(0, 0),
-            new google.maps.Point(10, 34),
-            new google.maps.Size(21,34));
-        return markerImage;
-    }
-
-    this.currentWish = ko.observable();
-    function wishesMarkers(wishList) {
-        var wishIcon = makeMarkerIcon('0091ff');
-        for (var i = 0; i < wishList.length; i++) {
-          var theWish = wishList[i];
-
-          var marker = new google.maps.Marker({
-              position: theWish.position,
-              icon: wishIcon,
-              title: theWish.place,
-              wishName: theWish.wishName,
-              date: theWish.date,
-              cost: theWish.cost,
-              notes: theWish.notes,
-              animation: google.maps.Animation.DROP,
-              id: i
-          });
-          marker.addListener('click', function() {
-              self.showTheWish(true);
-              self.currentWish(this);
-          });
-          markers.push(marker);
-        }
-    }
-
-    this.setWish = function(clickedWish) {
-        console.log(clickedWish);
-        self.showTheWish(true);
-        self.currentWish(clickedWish)
-    };
+  //}
 
 };
 
@@ -357,6 +210,7 @@ function initMap() {
         center: {lat: -19.925382, lng: -43.942943},
         zoom: 4
     });
+
 
     ko.applyBindings(new ViewModel());
 }
