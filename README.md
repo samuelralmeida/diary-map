@@ -8,6 +8,7 @@ Create config.js in js folder following code below:
 ```
 var config = {
   GOOGLE_KEY : 'YOUR_GOOGLE_MAP_API_KEY'
+  NYT_KEY : 'YOUR_NEW_YORK_TIMES_API_KEY'
 }
 ```
 
