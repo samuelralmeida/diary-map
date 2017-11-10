@@ -16,9 +16,16 @@ var Wish = function(mark) {
     console.log(JSON.parse(localStorage.wishes));
 };
 
-// model of achievements
-var Achievement = function(data) {
+// model of dreams
+var Dream = function(mark) {
+    if (!localStorage.dreams) {
+        localStorage.dreams = JSON.stringify([]);
+    }
+    var data = JSON.parse(localStorage.dreams);
+    data.push(mark);
+    localStorage.dreams = JSON.stringify(data);
 
+    console.log(JSON.parse(localStorage.dreams));
 };
 
 var Marker = function(data) {
@@ -338,11 +345,22 @@ var ViewModel = function() {
     };
 
     Wish(mark)
-
   }
 
   this.saveDream = function(marker) {
-    console.log(marker.currentMarker());
+    var dreamMarker;
+    var dreamIcon = makeMarkerIcon('FFFF24');
+    dreamMarker = self.currentMarker();
+    dreamMarker.setIcon(dreamIcon);
+
+    var mark = {
+        title: dreamMarker.title,
+        position: dreamMarker.position,
+        icon: dreamMarker.icon,
+        id: dreamMarker.id
+    };
+
+    Dream(mark)
   }
 
 
