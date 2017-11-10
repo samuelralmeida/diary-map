@@ -87,10 +87,87 @@
 
                 <div class="row">
                   <div class="col-md-12">
-                    <div data-bind="with: currentMarker">
-                      <h4 data-bind="text: title"></h4>
+                    <div data-bind="if: currentMarker">
+                      <div data-bind="with: currentMarker">
+                        <h4 data-bind="text: title"></h4>
+                      </div>
+                      <hr>
+                  </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4">
+                    <div data-bind="if: currentMarker">
+                      <p>
+                        <span>Step 0 - </span>
+                        <span data-bind="text: currentMarker().title"></span>
+                        <span> is a: </span>
+                      <label><input type="radio" value="Wish" data-bind="checked: wishOrDream, click: display">Dream to realize</label>
+                      <label><input type="radio" value="Dream" data-bind="checked: wishOrDream, click: display">Dream come true</label>
                     </div>
-                    <hr>
+                    <div data-bind="if: displayWish">
+                      <form data-bind="submit: saveWish">
+                        <div class="form-row">
+                          <div class="form-group col-md-12">
+                            <div>
+                                <h6>Step 1 - Choose a date to realize this dream</h6>
+                                <input type="date" name="dayD" data-bind="value: date">
+                            </div>
+                            <br>
+                            <div>
+                              <h6>Step 2 - Find out about the location (optional)</h6>
+                              <p>Read some articles that we link to you</p>
+                            </div>
+                            <div>
+                                <h6>Step 3 - Total cost (Format: 22.18)</h6>
+                                <input type="number" min="0.00" max="10000.00" step="0.01" data-bind="value: cost">
+                                <p>Tips: account entry, transportation, hosting, food, etc.</p>
+                            </div>
+                            <div>
+                                <h6>Step 4 - Notes</h6>
+                                <span>What are your expectations? What do you want to do there? Detail your dream to make it palpable.</span>
+                            </div>
+                            <div>
+                                <textarea class="form-control" rows="5" data-bind="value: notes"></textarea>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Save this dream</button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <div data-bind="if: displayDream">Dream</div>
+                  </div>
+
+                  <div class="col-md-8">
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div>
+                          <p data-bind="text: wikiMsg"></p>
+                        </div>
+                        <div>
+                          <ul data-bind="foreach: wikiLinks">
+                            <li><a target="_blank" data-bind="attr: {href: url}, text: title"></a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div>
+                          <p data-bind="text: nytMsg"></p>
+                        </div>
+                        <div>
+                          <ul data-bind="foreach: nytLinks">
+                            <li>
+                              <a target="_blank" data-bind="attr: {href: url}, text: title"></a>
+                              <p data-bind="text: snippet"></p>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -142,9 +219,18 @@
                     <div data-bind="if: currentWish">
                       <div data-bind="with: currentWish">
                         <h4 data-bind="text: title"></h4>
-                        teste
+                        <hr>
+                        <h6>
+                          <span>The date to realize this dream: </span>
+                          <span data-bind="text: date"></span>
+                        </h6>
+                        <h6>
+                          <span>You estimated the budget in $</span>
+                          <span data-bind="text: cost"></span>
+                        </h6>
+                        <h6>Important notes:</h6>
+                        <p data-bind="text: notes"></p>
                       </div>
-                      <hr>
                     </div>
                   </div>
                 </div>

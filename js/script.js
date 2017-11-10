@@ -149,6 +149,9 @@ var ViewModel = function() {
     self.result(false);
     self.flash(null);
     self.currentWish(null);
+    self.wishOrDream(null);
+    self.displayWish(null);
+    self.displayDream(null);
   }
 
 
@@ -348,7 +351,10 @@ var ViewModel = function() {
 
   // control buttons
   this.buttons = ko.observable(false);
-  this.saveWish = function(marker) {
+  this.date = ko.observable();
+  this.cost = ko.observable();
+  this.notes = ko.observable();
+  this.saveWish = function() {
     var wishMarker;
     var wishIcon = makeMarkerIcon('0091ff');
     wishMarker = self.currentMarker();
@@ -358,7 +364,10 @@ var ViewModel = function() {
         title: wishMarker.title,
         position: wishMarker.position,
         icon: wishMarker.icon,
-        id: wishMarker.id
+        id: wishMarker.id,
+        date: self.date(),
+        cost: self.cost(),
+        note: self.notes()
     };
 
     Wish(mark);
@@ -398,7 +407,10 @@ var ViewModel = function() {
             title: wish.title,
             position: wish.position,
             id: wish.id,
-            icon: wish.icon
+            icon: wish.icon,
+            date: wish.date,
+            cost: wish.cost,
+            note: wish.notes
           });
           marker.setMap(null)
           marker.addListener('click', function() {
@@ -427,6 +439,22 @@ var ViewModel = function() {
       map.setCenter(self.currentWish().position);
       map.setZoom(15);
   };
+
+  this.wishOrDream = ko.observable();
+  this.displayWish = ko.observable(false);
+  this.displayDream = ko.observable(false);
+  this.display = function(clicked){
+     if (clicked.wishOrDream() === 'Wish'){
+       self.displayWish(true);
+       self.displayDream(false);
+     } else if (clicked.wishOrDream() === 'Dream') {
+       self.displayWish(false);
+       self.displayDream(true);
+     } else {
+       self.displayWish(false);
+       self.displayDream(false);
+     }
+  }
 
 };
 function initMap() {
