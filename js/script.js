@@ -12,18 +12,15 @@ var Wish = function(mark) {
     var data = JSON.parse(localStorage.wishes);
     data.push(mark);
     localStorage.wishes = JSON.stringify(data);
-
-    console.log(JSON.parse(localStorage.wishes));
 };
 
 var getWishes = function() {
     if (localStorage.wishes) {
       return JSON.parse(localStorage.wishes);
     } else {
-      return 'error'
+      return 'error';
     }
-
-}
+};
 
 // model of dreams
 var Dream = function(mark) {
@@ -33,24 +30,21 @@ var Dream = function(mark) {
     var data = JSON.parse(localStorage.dreams);
     data.push(mark);
     localStorage.dreams = JSON.stringify(data);
-
-    console.log(JSON.parse(localStorage.dreams));
 };
 
 var getDreams = function() {
     if (localStorage.dreams) {
       return JSON.parse(localStorage.dreams);
     } else {
-      return 'error'
+      return 'error';
     }
-
-}
+};
 
 var Marker = function(data) {
   this.title = ko.observable(data.title);
   this.position = ko.observable(data.position);
   this.id = ko.observable(data.id);
-}
+};
 
 var ViewModel = function() {
   var self = this;
@@ -74,19 +68,19 @@ var ViewModel = function() {
     if (sidebar === 'searches') {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = null
+      sidebar = null;
     } else if (sidebar === null) {
       self.wishes(false);
       self.dreams(false);
       self.searches(true);
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = 'searches'
+      sidebar = 'searches';
     } else if (sidebar === 'wishes' || sidebar === 'dreams') {
       self.wishes(false);
       self.dreams(false);
       self.searches(true);
-      sidebar = 'searches'
+      sidebar = 'searches';
     }
   });
 
@@ -94,19 +88,19 @@ var ViewModel = function() {
     if (sidebar === 'wishes') {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = null
+      sidebar = null;
     } else if (sidebar === null) {
       self.searches(false);
       self.dreams(false);
       self.wishes(true);
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = 'wishes'
+      sidebar = 'wishes';
     } else if (sidebar === 'searches' || sidebar === 'dreams') {
       self.searches(false);
       self.dreams(false);
       self.wishes(true);
-      sidebar = 'wishes'
+      sidebar = 'wishes';
     }
   });
 
@@ -114,19 +108,19 @@ var ViewModel = function() {
     if (sidebar === 'dreams') {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = null
+      sidebar = null;
     } else if (sidebar === null) {
       self.wishes(false);
       self.searches(false);
-      self.dreams(true)
+      self.dreams(true);
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = 'dreams'
+      sidebar = 'dreams';
     } else if (sidebar === 'searches' || sidebar === 'wishes') {
       self.wishes(false);
       self.searches(false);
-      self.dreams(true)
-      sidebar = 'dreams'
+      self.dreams(true);
+      sidebar = 'dreams';
     }
   });
 
@@ -150,11 +144,11 @@ var ViewModel = function() {
   // This function fires when the user selects a searchbox picklist item.
   // It will do a nearby search using the selected query string or place.
   function searchBoxPlaces(searchBox) {
-    resetLayout()
+    resetLayout();
     var places = searchBox.getPlaces();
     // For each place, get the icon, name and location.
     createMarkersForPlaces(places);
-    if (places.length == 0) {
+    if (places.length === 0) {
       window.alert('We did not find any places matching that search!');
     }
   }
@@ -162,7 +156,7 @@ var ViewModel = function() {
   // This function firest when the user select "go" on the places search.
   // It will do a nearby search using the entered query string or place.
   function textSearchPlaces() {
-    resetLayout()
+    resetLayout();
     var bounds = map.getBounds();
     var placesService = new google.maps.places.PlacesService(map);
     placesService.textSearch({
@@ -179,7 +173,7 @@ var ViewModel = function() {
   function resetLayout() {
     if (self.currentMarker()) {
         self.currentMarker().setMap(null);
-    };
+    }
     self.currentMarker(null);
     self.buttons(false);
     self.wikiMsg(null);
@@ -192,7 +186,7 @@ var ViewModel = function() {
     self.currentDream(null);
     if (self.wishOrDream()) {
       self.wishOrDream(null);
-    };
+    }
     self.displayWish(null);
     self.displayDream(null);
     self.searchFlash(false);
@@ -206,7 +200,7 @@ var ViewModel = function() {
   this.currentMarker = ko.observable();
   function createMarkersForPlaces(places) {
     self.searchFlash(false);
-    var placesSearched = []
+    var placesSearched = [];
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < places.length; i++) {
       var place = places[i];
@@ -229,7 +223,7 @@ var ViewModel = function() {
           getPlacesDetails(this, placeInfoWindow);
           self.currentMarker(this);
           wikiSearch(this);
-          nytSearch(this)
+          nytSearch(this);
           self.buttons(true);
         }
       });
@@ -297,8 +291,8 @@ var ViewModel = function() {
   function listResult(placesSearched) {
     self.markersList([]);
     placesSearched.forEach(function(place){
-      self.markersList.push(place)
-    })
+      self.markersList.push(place);
+    });
   }
 
   // change cuurent marker view
@@ -317,8 +311,7 @@ var ViewModel = function() {
   this.wikiMsg = ko.observable();
   this.wikiLinks = ko.observableArray([]);
   function wikiSearch(marker) {
-    var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search="
-      + marker.title + "&format=json&callback=wikiCallback";
+    var wikiUrl = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + marker.title + "&format=json&callback=wikiCallback";
 
     var wikiRequestTimeout = setTimeout(function(){
         self.wikiMsg("Failed to get Wikipedia resources");
@@ -340,16 +333,16 @@ var ViewModel = function() {
                     self.wikiLinks.push({
                       'title': articleStr,
                       'url': url
-                    })
+                    });
                     if (i === 4) {
-                      break
+                      break;
                     }
-                };
+                }
             }
             //se a requisição tiver sucesso, limpa o que foi feito pela função wikiRequestTimeout
             clearTimeout(wikiRequestTimeout);
         }
-    })
+    });
   }
 
   this.nytMsg = ko.observable();
@@ -372,12 +365,12 @@ var ViewModel = function() {
                 'title': article.headline.main,
                 'url': article.web_url,
                 'snippet': article.snippet
-              })
+              });
               if (i === 4) {
-                break
+                break;
               }
           }
-        };
+        }
     }).fail(function(e){
         self.nytMsg("Failed to get New York Times resources");
     });
@@ -424,9 +417,9 @@ var ViewModel = function() {
     self.date(null);
     self.cost(null);
     self.notes(null);
-    self.flash('Your wish has been saved')
+    self.flash('Your wish has been saved');
     self.result(true);
-  }
+  };
 
   // SAVE DREAM
   this.saveDream = function(marker) {
@@ -448,25 +441,25 @@ var ViewModel = function() {
     resetLayout();
     self.date(null);
     self.notes(null);
-    self.flash('Your dream has been saved')
+    self.flash('Your dream has been saved');
     self.result(true);
     self.searchFlash(true);
-  }
+  };
 
 
   //RECUE WISH
   this.wishFlash = ko.observable(true);
   this.currentWish = ko.observable();
-  this.wishList = ko.observableArray([])
+  this.wishList = ko.observableArray([]);
   this.showWishes = function() {
       allWishes = getWishes();
       if (allWishes === 'error'){
         self.wishFlash(true);
       } else {
         self.wishFlash(false);
-        var placesWishes = []
+        var placesWishes = [];
         for (var i = 0; i < allWishes.length; i++) {
-            wish = allWishes[i]
+            wish = allWishes[i];
             var marker = new google.maps.Marker({
               map: map,
               title: wish.title,
@@ -477,7 +470,7 @@ var ViewModel = function() {
               cost: wish.cost,
               notes: wish.notes
             });
-            marker.setMap(null)
+            marker.setMap(null);
             marker.addListener('click', function() {
                 marker.setMap(map);
                 marker.setZoom(10);
@@ -488,14 +481,14 @@ var ViewModel = function() {
         }
         listWish(placesWishes);
       }
-  }
+  };
 
   this.wishList = ko.observableArray([]);
   function listWish(placesWishes) {
     self.wishList([]);
     placesWishes.forEach(function(place){
-        self.wishList.push(place)
-    })
+        self.wishList.push(place);
+    });
   }
 
   this.setWish = function(clickedMarker) {
@@ -509,16 +502,16 @@ var ViewModel = function() {
   //RECUE DREAM
   this.dreamFlash = ko.observable(true);
   this.currentDream = ko.observable();
-  this.dreamList = ko.observableArray([])
+  this.dreamList = ko.observableArray([]);
   this.showDreams = function() {
       allDreams = getDreams();
       if (allDreams === 'error'){
         self.dreamFlash(true);
       } else {
         self.dreamFlash(false);
-        var placesDreams = []
+        var placesDreams = [];
         for (var i = 0; i < allDreams.length; i++) {
-            dream = allDreams[i]
+            dream = allDreams[i];
             var marker = new google.maps.Marker({
               map: map,
               title: dream.title,
@@ -528,7 +521,7 @@ var ViewModel = function() {
               date: dream.date,
               notes: dream.notes
             });
-            marker.setMap(null)
+            marker.setMap(null);
             marker.addListener('click', function() {
                 marker.setMap(map);
                 marker.setZoom(10);
@@ -539,14 +532,14 @@ var ViewModel = function() {
         }
         listDream(placesDreams);
       }
-  }
+  };
 
   this.dreamList = ko.observableArray([]);
   function listDream(placesDreams) {
     self.dreamList([]);
     placesDreams.forEach(function(place){
-        self.dreamList.push(place)
-    })
+        self.dreamList.push(place);
+    });
   }
 
   this.setDream = function(clickedMarker) {
@@ -573,7 +566,7 @@ var ViewModel = function() {
        self.displayWish(false);
        self.displayDream(false);
      }
-  }
+  };
 
 };
 function initMap() {
