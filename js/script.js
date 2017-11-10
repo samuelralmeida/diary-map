@@ -52,8 +52,9 @@ var ViewModel = function() {
   this.flash = ko.observable();
 
   //CONTROL SIDEBA MENU
-  this.searches = ko.observable(false)
-  this.saves = ko.observable(false)
+  this.searches = ko.observable(false);
+  this.wishes = ko.observable(false);
+  this.dreams = ko.observable(false);
   var sidebar = null;
   $("#menu-toggle1").click(function(e) {
     if (sidebar === 'searches') {
@@ -61,33 +62,57 @@ var ViewModel = function() {
       $("#wrapper").toggleClass("toggled");
       sidebar = null
     } else if (sidebar === null) {
-      self.saves(false);
+      self.wishes(false);
+      self.dreams(false);
       self.searches(true);
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
       sidebar = 'searches'
-    } else if (sidebar === 'saves') {
-      self.saves(false);
+    } else if (sidebar === 'wishes' || sidebar === 'dreams') {
+      self.wishes(false);
+      self.dreams(false);
       self.searches(true);
       sidebar = 'searches'
     }
   });
 
   $("#menu-toggle2").click(function(e) {
-    if (sidebar === 'saves') {
+    if (sidebar === 'wishes') {
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
       sidebar = null
     } else if (sidebar === null) {
-      self.saves(true);
       self.searches(false);
+      self.dreams(false);
+      self.wishes(true);
       e.preventDefault();
       $("#wrapper").toggleClass("toggled");
-      sidebar = 'saves'
-    } else if (sidebar === 'searches') {
-      self.saves(true);
+      sidebar = 'wishes'
+    } else if (sidebar === 'searches' || sidebar === 'dreams') {
       self.searches(false);
-      sidebar = 'saves'
+      self.dreams(false);
+      self.wishes(true);
+      sidebar = 'wishes'
+    }
+  });
+
+  $("#menu-toggle3").click(function(e) {
+    if (sidebar === 'dreams') {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      sidebar = null
+    } else if (sidebar === null) {
+      self.wishes(false);
+      self.searches(false);
+      self.dreams(true)
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+      sidebar = 'dreams'
+    } else if (sidebar === 'searches' || sidebar === 'wishes') {
+      self.wishes(false);
+      self.searches(false);
+      self.dreams(true)
+      sidebar = 'dreams'
     }
   });
 

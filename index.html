@@ -23,12 +23,20 @@
               <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
           </ul>
         </div>
-        <div data-bind="visible: saves">
-          <div class="wish-names sidebar-header">
+        <div data-bind="visible: wishes">
+          <div class="sidebar-header">
               <h3>Wishes</h3>
           </div>
           <ul class="wish-ul" data-bind="foreach: wishList">
               <li class="wish-names" data-bind="text: title, click: $parent.setWish"></li>
+          </ul>
+        </div>
+        <div data-bind="visible: dreams">
+          <div class="sidebar-header">
+              <h3>Dreams come true</h3>
+          </div>
+          <ul class="wish-ul" data-bind="foreach: dreamList">
+              <li class="wish-names" data-bind="text: title, click: $parent.setDream"></li>
           </ul>
         </div>
       </div>
@@ -52,6 +60,9 @@
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" href="#menu-toggle" id="menu-toggle2" data-bind="click: showWishes">Wishes</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#menu-toggle" id="menu-toggle3" data-bind="click: showDreams">Dreams come true</a>
                   </li>
                 </ul>
               </div>
