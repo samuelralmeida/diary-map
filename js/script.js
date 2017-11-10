@@ -44,6 +44,9 @@ var ViewModel = function() {
   // over the number of places that show.
   var placeMarkers = [];
 
+  this.result = ko.observable(false);
+  this.flash = ko.observable();
+
   //CONTROL SIDEBA MENU
   this.searches = ko.observable(false)
   this.saves = ko.observable(false)
@@ -130,12 +133,17 @@ var ViewModel = function() {
   }
 
   function resetLayout() {
+    if (self.currentMarker()) {
+        self.currentMarker().setMap(null);
+    };
     self.currentMarker(null);
     self.buttons(false);
     self.wikiMsg(null);
     self.wikiLinks(null);
     self.nytMsg(null);
     self.nytLinks(null);
+    self.result(false);
+    self.flash(null);
   }
 
 
@@ -344,7 +352,10 @@ var ViewModel = function() {
         id: wishMarker.id
     };
 
-    Wish(mark)
+    Wish(mark);
+    resetLayout();
+    self.flash('Your wish has been saved')
+    self.result(true);
   }
 
   this.saveDream = function(marker) {
@@ -360,7 +371,10 @@ var ViewModel = function() {
         id: dreamMarker.id
     };
 
-    Dream(mark)
+    Dream(mark);
+    resetLayout();
+    self.flash('Your dream has been saved')
+    self.result(true);
   }
 
 
