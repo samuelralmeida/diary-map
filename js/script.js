@@ -148,6 +148,7 @@ var ViewModel = function() {
     self.nytLinks(null);
     self.result(false);
     self.flash(null);
+    self.currentWish(null);
   }
 
 
@@ -251,9 +252,13 @@ var ViewModel = function() {
 
   // change cuurent marker view
   this.setMarker = function(clickedMarker) {
-      self.currentMarker(clickedMarker)
+      resetLayout();
+      self.currentMarker(clickedMarker);
+      self.currentMarker().setMap(map);
+      map.setCenter(self.currentMarker().position);
+      map.setZoom(15);
       wikiSearch(clickedMarker);
-      nytSearch(clickedMarker)
+      nytSearch(clickedMarker);
       self.buttons(true);
   };
 
@@ -381,6 +386,7 @@ var ViewModel = function() {
     self.result(true);
   }
 
+  this.currentWish = ko.observable();
   this.wishList = ko.observableArray([])
   this.showWishes = function() {
       allWishes = getWishes();
@@ -399,7 +405,7 @@ var ViewModel = function() {
               marker.setMap(map);
               marker.setZoom(10);
               marker.setCenter(wish.position);
-              self.currentMarker(this);
+              self.currentWish(this);
           });
           placesWishes.push(marker);
       }
@@ -415,10 +421,10 @@ var ViewModel = function() {
   }
 
   this.setWish = function(clickedMarker) {
-      self.currentMarker(clickedMarker);
-      self.currentMarker().setMap(map);
-      console.log(self.currentMarker.position)
-      map.setCenter(self.currentMarker().position);
+      resetLayout();
+      self.currentWish(clickedMarker);
+      self.currentWish().setMap(map);
+      map.setCenter(self.currentWish().position);
       map.setZoom(15);
   };
 

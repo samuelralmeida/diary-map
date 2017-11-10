@@ -137,6 +137,18 @@
 
                 </div>
 
+                <div class="row">
+                  <div class="col-md-12">
+                    <div data-bind="if: currentWish">
+                      <div data-bind="with: currentWish">
+                        <h4 data-bind="text: title"></h4>
+                        teste
+                      </div>
+                      <hr>
+                    </div>
+                  </div>
+                </div>
+
                 <!--<div class="result" data-bind="visible: outcome, text: result"></div>-->
 
               </div>
