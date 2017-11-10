@@ -17,26 +17,35 @@
       <div id="sidebar-wrapper">
         <div data-bind="visible: searches">
           <div class="sidebar-header">
-              <h3>Search Results</h3>
+              <h3 class="sidebar-title">Search Results</h3>
+          </div>
+          <div data-bind="visible: searchFlash">
+            <p class="flash-search">Do a search and see the results listed here</p>
           </div>
           <ul class="wish-ul" data-bind="foreach: markersList">
-              <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
+              <li class="li-search" data-bind="text: title, click: $parent.setMarker"></li>
           </ul>
         </div>
         <div data-bind="visible: wishes">
           <div class="sidebar-header">
-              <h3>Wishes</h3>
+              <h3 class="sidebar-title">Wishes</h3>
+          </div>
+          <div data-bind="visible: wishFlash">
+            <p class="flash-wish">There are no saved wishes</p>
           </div>
           <ul class="wish-ul" data-bind="foreach: wishList">
-              <li class="wish-names" data-bind="text: title, click: $parent.setWish"></li>
+              <li class="li-wish" data-bind="text: title, click: $parent.setWish"></li>
           </ul>
         </div>
         <div data-bind="visible: dreams">
           <div class="sidebar-header">
-              <h3>Dreams come true</h3>
+              <h3 class="sidebar-title">Dreams come true</h3>
+          </div>
+          <div data-bind="visible: dreamFlash">
+            <p class="flash-dream">There are no saved dreams</p>
           </div>
           <ul class="wish-ul" data-bind="foreach: dreamList">
-              <li class="wish-names" data-bind="text: title, click: $parent.setDream"></li>
+              <li class="li-dream" data-bind="text: title, click: $parent.setDream"></li>
           </ul>
         </div>
       </div>
@@ -114,8 +123,9 @@
                         <span>Step 0 - </span>
                         <span data-bind="text: currentMarker().title"></span>
                         <span> is a: </span>
-                      <label><input type="radio" value="Wish" data-bind="checked: wishOrDream, click: display">Dream to realize</label>
-                      <label><input type="radio" value="Dream" data-bind="checked: wishOrDream, click: display">Dream come true</label>
+                      </p>
+                      <div><label><input type="radio" value="Wish" data-bind="checked: wishOrDream, click: display">Dream to realize</label></div>
+                      <div><label><input type="radio" value="Dream" data-bind="checked: wishOrDream, click: display">Dream come true</label></div>
                     </div>
                     <div data-bind="if: displayWish">
                       <form data-bind="submit: saveWish">
@@ -148,7 +158,33 @@
                         </div>
                       </form>
                     </div>
-                    <div data-bind="if: displayDream">Dream</div>
+
+                    <div data-bind="if: displayDream">
+                      <form data-bind="submit: saveDream">
+                        <div class="form-row">
+                          <div class="form-group col-md-12">
+                            <div>
+                                <h6>Step 1 - When did you realize that dream?</h6>
+                                <input type="date" name="dayD" data-bind="value: date">
+                            </div>
+                            <br>
+                            <div>
+                              <h6>Step 2 - Know more (optional)</h6>
+                              <p>Read some articles that we link to you</p>
+                            </div>
+                            <div>
+                                <h6>Step 3 - Notes</h6>
+                                <span>What you liked the most? What surprised you the most? What do not you want to forget?</span>
+                            </div>
+                            <div>
+                                <textarea class="form-control" rows="5" data-bind="value: notes"></textarea>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Do not forget this realization</button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
                   </div>
 
                   <div class="col-md-8">
@@ -183,49 +219,6 @@
                 </div>
 
                 <div class="row">
-
-                  <div class="col-md-2">
-                    <div>
-                      <p data-bind="text: wikiMsg"></p>
-                    </div>
-                    <div>
-                      <ul data-bind="foreach: wikiLinks">
-                        <li><a target="_blank" data-bind="attr: {href: url}, text: title"></a></li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div class="col-md-8">
-                    <div>
-                      <p data-bind="text: nytMsg"></p>
-                    </div>
-                    <div>
-                      <ul data-bind="foreach: nytLinks">
-                        <li>
-                          <a target="_blank" data-bind="attr: {href: url}, text: title"></a>
-                          <p data-bind="text: snippet"></p>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div class="col-md-2">
-                    <div data-bind="with: currentMarker">
-                      <p>
-                        <span data-bind="text: title"></span>
-                        <span> is</span>
-                      </p>
-                    </div>
-                    <div data-bind="visible: buttons">
-                      <button type="button" class="btn btn-primary btn-lg" data-bind="click: saveWish">A dream to realize</button>
-                      <br><br>
-                      <button type="button" class="btn btn-primary btn-lg" data-bind="click: saveDream">A dream come true</button>
-                    </div>
-                  </div>
-
-                </div>
-
-                <div class="row">
                   <div class="col-md-12">
                     <div data-bind="if: currentWish">
                       <div data-bind="with: currentWish">
@@ -246,7 +239,22 @@
                   </div>
                 </div>
 
-                <!--<div class="result" data-bind="visible: outcome, text: result"></div>-->
+                <div class="row">
+                  <div class="col-md-12">
+                    <div data-bind="if: currentDream">
+                      <div data-bind="with: currentDream">
+                        <h4 data-bind="text: title"></h4>
+                        <hr>
+                        <h6>
+                          <span>You realized this dream in: </span>
+                          <span data-bind="text: date"></span>
+                        </h6>
+                        <h6>Important memories:</h6>
+                        <p data-bind="text: notes"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
               </div>
             </main>

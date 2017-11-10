@@ -17,7 +17,12 @@ var Wish = function(mark) {
 };
 
 var getWishes = function() {
-    return JSON.parse(localStorage.wishes);
+    if (localStorage.wishes) {
+      return JSON.parse(localStorage.wishes);
+    } else {
+      return 'error'
+    }
+
 }
 
 // model of dreams
@@ -31,6 +36,15 @@ var Dream = function(mark) {
 
     console.log(JSON.parse(localStorage.dreams));
 };
+
+var getDreams = function() {
+    if (localStorage.dreams) {
+      return JSON.parse(localStorage.dreams);
+    } else {
+      return 'error'
+    }
+
+}
 
 var Marker = function(data) {
   this.title = ko.observable(data.title);
@@ -161,6 +175,7 @@ var ViewModel = function() {
     });
   }
 
+  //RESET TO INITIAL KO FUNCTIONS CONDITIONS
   function resetLayout() {
     if (self.currentMarker()) {
         self.currentMarker().setMap(null);
@@ -174,15 +189,21 @@ var ViewModel = function() {
     self.result(false);
     self.flash(null);
     self.currentWish(null);
-    self.wishOrDream(null);
+    self.currentDream(null);
+    if (self.wishOrDream()) {
+      self.wishOrDream(null);
+    };
     self.displayWish(null);
     self.displayDream(null);
+    self.searchFlash(false);
   }
 
 
   //CREATE MARKERS AND THEM DETAILS
+  this.searchFlash = ko.observable(true);
   this.currentMarker = ko.observable();
   function createMarkersForPlaces(places) {
+    self.searchFlash(false);
     var placesSearched = []
     var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < places.length; i++) {
@@ -323,7 +344,6 @@ var ViewModel = function() {
                     }
                 };
             }
-
             //se a requisição tiver sucesso, limpa o que foi feito pela função wikiRequestTimeout
             clearTimeout(wikiRequestTimeout);
         }
@@ -374,11 +394,13 @@ var ViewModel = function() {
       return markerImage;
   }
 
-  // control buttons
-  this.buttons = ko.observable(false);
+  //FORM VARIABLES
   this.date = ko.observable();
   this.cost = ko.observable();
   this.notes = ko.observable();
+
+  // SAVE WISH
+  this.buttons = ko.observable(false);
   this.saveWish = function() {
     var wishMarker;
     var wishIcon = makeMarkerIcon('0091ff');
@@ -392,14 +414,19 @@ var ViewModel = function() {
         id: wishMarker.id,
         date: self.date(),
         cost: self.cost(),
-        note: self.notes()
+        notes: self.notes()
     };
 
     Wish(mark);
     resetLayout();
+    self.date(null);
+    self.cost(null);
+    self.notes(null);
     self.flash('Your wish has been saved')
     self.result(true);
   }
+
+  // SAVE DREAM
 
   this.saveDream = function(marker) {
     var dreamMarker;
@@ -411,42 +438,54 @@ var ViewModel = function() {
         title: dreamMarker.title,
         position: dreamMarker.position,
         icon: dreamMarker.icon,
-        id: dreamMarker.id
+        id: dreamMarker.id,
+        date: self.date(),
+        notes: self.notes()
     };
 
     Dream(mark);
     resetLayout();
+    self.date(null);
+    self.notes(null);
     self.flash('Your dream has been saved')
     self.result(true);
   }
 
+
+  //RECUE WISH
+  this.wishFlash = ko.observable(true);
   this.currentWish = ko.observable();
   this.wishList = ko.observableArray([])
   this.showWishes = function() {
       allWishes = getWishes();
-      var placesWishes = []
-      for (var i = 0; i < allWishes.length; i++) {
-          wish = allWishes[i]
-          var marker = new google.maps.Marker({
-            map: map,
-            title: wish.title,
-            position: wish.position,
-            id: wish.id,
-            icon: wish.icon,
-            date: wish.date,
-            cost: wish.cost,
-            note: wish.notes
-          });
-          marker.setMap(null)
-          marker.addListener('click', function() {
-              marker.setMap(map);
-              marker.setZoom(10);
-              marker.setCenter(wish.position);
-              self.currentWish(this);
-          });
-          placesWishes.push(marker);
+      if (allWishes === 'error'){
+        self.wishFlash(true);
+      } else {
+        self.wishFlash(false);
+        var placesWishes = []
+        for (var i = 0; i < allWishes.length; i++) {
+            wish = allWishes[i]
+            var marker = new google.maps.Marker({
+              map: map,
+              title: wish.title,
+              position: wish.position,
+              id: wish.id,
+              icon: wish.icon,
+              date: wish.date,
+              cost: wish.cost,
+              notes: wish.notes
+            });
+            marker.setMap(null)
+            marker.addListener('click', function() {
+                marker.setMap(map);
+                marker.setZoom(10);
+                marker.setCenter(wish.position);
+                self.currentWish(this);
+            });
+            placesWishes.push(marker);
+        }
+        listWish(placesWishes);
       }
-      listWish(placesWishes);
   }
 
   this.wishList = ko.observableArray([]);
@@ -465,6 +504,59 @@ var ViewModel = function() {
       map.setZoom(15);
   };
 
+  //RECUE DREAM
+  this.dreamFlash = ko.observable(true);
+  this.currentDream = ko.observable();
+  this.dreamList = ko.observableArray([])
+  this.showDreams = function() {
+      allDreams = getDreams();
+      if (allDreams === 'error'){
+        self.dreamFlash(true);
+      } else {
+        self.dreamFlash(false);
+        var placesDreams = []
+        for (var i = 0; i < allDreams.length; i++) {
+            dream = allDreams[i]
+            var marker = new google.maps.Marker({
+              map: map,
+              title: dream.title,
+              position: dream.position,
+              id: dream.id,
+              icon: dream.icon,
+              date: dream.date,
+              notes: dream.notes
+            });
+            marker.setMap(null)
+            marker.addListener('click', function() {
+                marker.setMap(map);
+                marker.setZoom(10);
+                marker.setCenter(dream.position);
+                self.currentDream(this);
+            });
+            placesDreams.push(marker);
+        }
+        listDream(placesDreams);
+      }
+  }
+
+  this.dreamList = ko.observableArray([]);
+  function listDream(placesDreams) {
+    self.dreamList([]);
+    placesDreams.forEach(function(place){
+        self.dreamList.push(place)
+    })
+  }
+
+  this.setDream = function(clickedMarker) {
+      resetLayout();
+      self.currentDream(clickedMarker);
+      self.currentDream().setMap(map);
+      map.setCenter(self.currentDream().position);
+      map.setZoom(15);
+  };
+
+
+  // CONTROL WISH OR DREAM FORM TO USER
   this.wishOrDream = ko.observable();
   this.displayWish = ko.observable(false);
   this.displayDream = ko.observable(false);
