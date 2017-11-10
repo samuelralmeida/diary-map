@@ -25,11 +25,11 @@
         </div>
         <div data-bind="visible: saves">
           <div class="wish-names sidebar-header">
-              <h3>Saves</h3>
+              <h3>Wishes</h3>
           </div>
-          <!--<<ul class="wish-ul" data-bind="foreach: markersList">
-              <li class="wish-names" data-bind="text: title, click: $parent.setMarker"></li>
-          </ul>-->
+          <ul class="wish-ul" data-bind="foreach: wishList">
+              <li class="wish-names" data-bind="text: title, click: $parent.setWish"></li>
+          </ul>
         </div>
       </div>
 
@@ -51,7 +51,7 @@
                     <a class="nav-link" href="#menu-toggle" id="menu-toggle1">Search results</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="#menu-toggle" id="menu-toggle2">Saves</a>
+                    <a class="nav-link" href="#menu-toggle" id="menu-toggle2" data-bind="click: showWishes">Wishes</a>
                   </li>
                 </ul>
               </div>

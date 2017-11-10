@@ -16,6 +16,10 @@ var Wish = function(mark) {
     console.log(JSON.parse(localStorage.wishes));
 };
 
+var getWishes = function() {
+    return JSON.parse(localStorage.wishes);
+}
+
 // model of dreams
 var Dream = function(mark) {
     if (!localStorage.dreams) {
@@ -377,6 +381,46 @@ var ViewModel = function() {
     self.result(true);
   }
 
+  this.wishList = ko.observableArray([])
+  this.showWishes = function() {
+      allWishes = getWishes();
+      var placesWishes = []
+      for (var i = 0; i < allWishes.length; i++) {
+          wish = allWishes[i]
+          var marker = new google.maps.Marker({
+            map: map,
+            title: wish.title,
+            position: wish.position,
+            id: wish.id,
+            icon: wish.icon
+          });
+          marker.setMap(null)
+          marker.addListener('click', function() {
+              marker.setMap(map);
+              marker.setZoom(10);
+              marker.setCenter(wish.position);
+              self.currentMarker(this);
+          });
+          placesWishes.push(marker);
+      }
+      listWish(placesWishes);
+  }
+
+  this.wishList = ko.observableArray([]);
+  function listWish(placesWishes) {
+    self.wishList([]);
+    placesWishes.forEach(function(place){
+        self.wishList.push(place)
+    })
+  }
+
+  this.setWish = function(clickedMarker) {
+      self.currentMarker(clickedMarker);
+      self.currentMarker().setMap(map);
+      console.log(self.currentMarker.position)
+      map.setCenter(self.currentMarker().position);
+      map.setZoom(15);
+  };
 
 };
 function initMap() {
