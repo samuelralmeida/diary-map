@@ -196,6 +196,8 @@ var ViewModel = function() {
     self.displayWish(null);
     self.displayDream(null);
     self.searchFlash(false);
+    self.markersList([]);
+    self.dreamFlash(true);
   }
 
 
@@ -427,7 +429,6 @@ var ViewModel = function() {
   }
 
   // SAVE DREAM
-
   this.saveDream = function(marker) {
     var dreamMarker;
     var dreamIcon = makeMarkerIcon('FFFF24');
@@ -449,6 +450,7 @@ var ViewModel = function() {
     self.notes(null);
     self.flash('Your dream has been saved')
     self.result(true);
+    self.searchFlash(true);
   }
 
 
