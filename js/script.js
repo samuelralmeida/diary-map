@@ -175,7 +175,6 @@ var ViewModel = function() {
         self.currentMarker().setMap(null);
     }
     self.currentMarker(null);
-    self.buttons(false);
     self.wikiMsg(null);
     self.wikiLinks(null);
     self.nytMsg(null);
@@ -189,9 +188,8 @@ var ViewModel = function() {
     }
     self.displayWish(null);
     self.displayDream(null);
-    self.searchFlash(false);
+    self.searchFlash(true);
     self.markersList([]);
-    self.dreamFlash(true);
   }
 
 
@@ -202,6 +200,18 @@ var ViewModel = function() {
     self.searchFlash(false);
     var placesSearched = [];
     var bounds = new google.maps.LatLngBounds();
+
+    function markerListener(marker, placeInfoWindow){
+        if (placeInfoWindow.marker == marker) {
+          console.log("This infowindow already is on this marker!");
+        } else {
+          getPlacesDetails(marker, placeInfoWindow);
+          self.currentMarker(marker);
+          wikiSearch(marker);
+          nytSearch(marker);
+        }
+    }
+
     for (var i = 0; i < places.length; i++) {
       var place = places[i];
 
@@ -216,18 +226,8 @@ var ViewModel = function() {
       // so that only one is open at once.
       var placeInfoWindow = new google.maps.InfoWindow();
       // If a marker is clicked, do a place details search on it in the next function.
-      marker.addListener('click', function() {
-        if (placeInfoWindow.marker == this) {
-          console.log("This infowindow already is on this marker!");
-        } else {
-          getPlacesDetails(this, placeInfoWindow);
-          self.currentMarker(this);
-          wikiSearch(this);
-          nytSearch(this);
-          self.buttons(true);
-        }
-      });
-      //placeMarkers.push(marker);
+      marker.addListener('click', markerListener(marker, placeInfoWindow));
+
       placesSearched.push(marker);
       if (place.geometry.viewport) {
         // Only geocodes have viewport.
@@ -304,7 +304,6 @@ var ViewModel = function() {
       map.setZoom(15);
       wikiSearch(clickedMarker);
       nytSearch(clickedMarker);
-      self.buttons(true);
   };
 
   // use wikipedia API to show articles about place
@@ -395,7 +394,6 @@ var ViewModel = function() {
   this.notes = ko.observable();
 
   // SAVE WISH
-  this.buttons = ko.observable(false);
   this.saveWish = function() {
     var wishMarker;
     var wishIcon = makeMarkerIcon('0091ff');
@@ -453,6 +451,13 @@ var ViewModel = function() {
   this.wishList = ko.observableArray([]);
   this.showWishes = function() {
       allWishes = getWishes();
+      //set configs to wish marker
+      function wishListener(marker, wish) {
+          marker.setMap(map);
+          map.setZoom(10);
+          map.setCenter(wish.position);
+      }
+      // verify response from localStorage
       if (allWishes === 'error'){
         self.wishFlash(true);
       } else {
@@ -470,13 +475,8 @@ var ViewModel = function() {
               cost: wish.cost,
               notes: wish.notes
             });
+            marker.addListener('click', wishListener(marker, wish));
             marker.setMap(null);
-            marker.addListener('click', function() {
-                marker.setMap(map);
-                marker.setZoom(10);
-                marker.setCenter(wish.position);
-                self.currentWish(this);
-            });
             placesWishes.push(marker);
         }
         listWish(placesWishes);
@@ -505,6 +505,13 @@ var ViewModel = function() {
   this.dreamList = ko.observableArray([]);
   this.showDreams = function() {
       allDreams = getDreams();
+      //set configs to dream marker
+      function dreamListener(marker, dream) {
+          marker.setMap(map);
+          map.setZoom(10);
+          map.setCenter(dream.position);
+      }
+      // verify response from localStorage
       if (allDreams === 'error'){
         self.dreamFlash(true);
       } else {
@@ -521,13 +528,8 @@ var ViewModel = function() {
               date: dream.date,
               notes: dream.notes
             });
+            marker.addListener('click', dreamListener(marker, dream));
             marker.setMap(null);
-            marker.addListener('click', function() {
-                marker.setMap(map);
-                marker.setZoom(10);
-                marker.setCenter(dream.position);
-                self.currentDream(this);
-            });
             placesDreams.push(marker);
         }
         listDream(placesDreams);
@@ -574,7 +576,6 @@ function initMap() {
         center: {lat: -19.925382, lng: -43.942943},
         zoom: 4
     });
-
 
     ko.applyBindings(new ViewModel());
 }
