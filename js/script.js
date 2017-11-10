@@ -5,7 +5,16 @@ var map;
 var sidebar;
 
 // model of wishes
-var Wish = function(data) {};
+var Wish = function(mark) {
+    if (!localStorage.wishes) {
+        localStorage.wishes = JSON.stringify([]);
+    }
+    var data = JSON.parse(localStorage.wishes);
+    data.push(mark);
+    localStorage.wishes = JSON.stringify(data);
+
+    console.log(JSON.parse(localStorage.wishes));
+};
 
 // model of achievements
 var Achievement = function(data) {
@@ -328,23 +337,8 @@ var ViewModel = function() {
         id: wishMarker.id
     };
 
-    if (!localStorage.wishes) {
-        localStorage.wishes = JSON.stringify([]);
-    }
-    var data = JSON.parse(localStorage.wishes);
-    data.push(mark);
-    localStorage.wishes = JSON.stringify(data);
+    Wish(mark)
 
-    console.log(JSON.parse(localStorage.wishes));
-
-
-    /*var jsonData = ko.toJS(wishMarker)
-    var existingEntries = JSON.parse(localStorage.getItem("allWishes"));
-    if(existingEntries == null) existingEntries = [];
-    existingEntries.push(jsonData);
-    localStorage.setItem("allWishes", ko.toJSON(existingEntries));
-
-    console.log(localStorage.getItem("allWishes"));*/
   }
 
   this.saveDream = function(marker) {
