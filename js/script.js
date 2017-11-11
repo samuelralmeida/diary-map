@@ -545,7 +545,7 @@ var ViewModel = function() {
               notes: dream.notes
             });
             marker.addListener('click', dreamListenerClick);
-            marker.addListener('dblclick', dreamListenerDblClick)
+            marker.addListener('dblclick', dreamListenerDblClick);
             marker.setMap(null);
             placesDreams.push(marker);
         }
