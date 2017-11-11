@@ -452,10 +452,17 @@ var ViewModel = function() {
   this.showWishes = function() {
       allWishes = getWishes();
       //set configs to wish marker
-      function wishListener(marker, wish) {
-          marker.setMap(map);
-          map.setZoom(10);
-          map.setCenter(wish.position);
+      function wishListener() {
+        resetLayout();
+        self.currentWish(this);
+        self.currentWish().setMap(map);
+      }
+      function wishListenerDblClick() {
+        resetLayout();
+        self.currentWish(this);
+        self.currentWish().setMap(map);
+        map.setCenter(self.currentWish().position);
+        map.setZoom(15);
       }
       // verify response from localStorage
       if (allWishes === 'error'){
@@ -475,11 +482,13 @@ var ViewModel = function() {
               cost: wish.cost,
               notes: wish.notes
             });
-            marker.addListener('click', wishListener(marker, wish));
+            marker.addListener('click', wishListener);
+            marker.addListener('dblclick', wishListenerDblClick)
             marker.setMap(null);
             placesWishes.push(marker);
         }
         listWish(placesWishes);
+        showListings(placesWishes);
       }
   };
 
@@ -506,10 +515,17 @@ var ViewModel = function() {
   this.showDreams = function() {
       allDreams = getDreams();
       //set configs to dream marker
-      function dreamListener(marker, dream) {
-          marker.setMap(map);
-          map.setZoom(10);
-          map.setCenter(dream.position);
+      function dreamListenerClick() {
+        resetLayout();
+        self.currentDream(this);
+        self.currentDream().setMap(map);
+      }
+      function dreamListenerDblClick() {
+        resetLayout();
+        self.currentDream(this);
+        self.currentDream().setMap(map);
+        map.setCenter(self.currentDream().position);
+        map.setZoom(15);
       }
       // verify response from localStorage
       if (allDreams === 'error'){
@@ -528,11 +544,13 @@ var ViewModel = function() {
               date: dream.date,
               notes: dream.notes
             });
-            marker.addListener('click', dreamListener(marker, dream));
+            marker.addListener('click', dreamListenerClick);
+            marker.addListener('dblclick', dreamListenerDblClick)
             marker.setMap(null);
             placesDreams.push(marker);
         }
         listDream(placesDreams);
+        showListings(placesDreams);
       }
   };
 
@@ -545,11 +563,11 @@ var ViewModel = function() {
   }
 
   this.setDream = function(clickedMarker) {
-      resetLayout();
-      self.currentDream(clickedMarker);
-      self.currentDream().setMap(map);
-      map.setCenter(self.currentDream().position);
-      map.setZoom(15);
+    resetLayout();
+    self.currentDream(clickedMarker);
+    self.currentDream().setMap(map);
+    map.setCenter(self.currentDream().position);
+    map.setZoom(15);
   };
 
 
@@ -569,6 +587,17 @@ var ViewModel = function() {
        self.displayDream(false);
      }
   };
+
+  // This function will loop through the markers array and display them all.
+  function showListings(markers) {
+    var bounds = new google.maps.LatLngBounds();
+    // Extend the boundaries of the map for each marker and display the marker
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+      bounds.extend(markers[i].position);
+    }
+    map.fitBounds(bounds);
+  }
 
 };
 function initMap() {
