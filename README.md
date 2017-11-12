@@ -18,7 +18,8 @@ Just click WISHES or DREAM AS TRUE to visialize them.
 
 ## Features
 Google Maps API is used to show places around the world where you have
-visted ow want to visit.
+visted ow want to visit and load place infos and photos in infowindow to USER
+knows better the place before save it as wish or dream come true.
 
 New York Times and Wikipedia APIs are used to shows artcles about place search,
 this way you can know the place better and keep informed about it.
