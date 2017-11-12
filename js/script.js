@@ -67,40 +67,35 @@ var ViewModel = function() {
         {date: "2012-11-16", id: "ChIJV5Oc89AEdkgRYIIjBVjTCCc", notes:"One of the milestones of science", position:{lat: 51.50594799999999, lng: -0.1323539999999639}, title: "The Royal Society"}
     ];
     function create_markers(){
-
-        var markersLoad = []
         if (getWishes() === 'error' || getDreams() === 'error') {
-            var markersLoad = []
             for (var i = 0; i < locations_wish.length; i++ ) {
-                var local = locations_wish[i];
+                var localWish = locations_wish[i];
                 var wishIcon = makeMarkerIcon('0091ff');
-                var mark = {
-                    title: local.title,
-                    position: local.position,
+                var wishMark = {
+                    title: localWish.title,
+                    position: localWish.position,
                     icon: wishIcon,
-                    id: local.id,
-                    date: local.date,
-                    cost: local.cost,
-                    notes: local.notes
+                    id: localWish.id,
+                    date: localWish.date,
+                    cost: localWish.cost,
+                    notes: localWish.notes
                 };
-                Wish(mark);
-                markersLoad.push(mark)
+                Wish(wishMark);
             }
 
             for (var j = 0; j < locations_dream.length; j++) {
-                var local = locations_dream[j];
+                var localDream = locations_dream[j];
                 var dreamIcon = makeMarkerIcon('FFFF24');
-                var mark = {
-                    title: local.title,
-                    position: local.position,
+                var dreamMark = {
+                    title: localDream.title,
+                    position: localDream.position,
                     icon: dreamIcon,
-                    id: local.id,
-                    date: local.date,
-                    notes: local.notes
+                    id: localDream.id,
+                    date: localDream.date,
+                    notes: localDream.notes
                 };
-                Dream(mark);
-                markersLoad.push(mark)
-            };
+                Dream(dreamMark);
+            }
         }
     }
 
@@ -502,25 +497,25 @@ var ViewModel = function() {
     this.currentWish = ko.observable();
     this.wishList = ko.observableArray([]);
     this.showWishes = function() {
+
+        //set configs to wish marker
+        function wishListener() {
+            resetLayout();
+            self.currentWish(this);
+            self.currentWish().setMap(map);
+        }
+        function wishListenerDblClick() {
+            resetLayout();
+            self.currentWish(this);
+            self.currentWish().setMap(map);
+            map.setCenter(self.currentWish().position);
+            map.setZoom(15);
+        }
+
         if (placesWishes.length > 0) {
             showListings('wishes', placesWishes);
         } else {
             allWishes = getWishes();
-
-            //set configs to wish marker
-            function wishListener() {
-                resetLayout();
-                self.currentWish(this);
-                self.currentWish().setMap(map);
-            }
-            function wishListenerDblClick() {
-                resetLayout();
-                self.currentWish(this);
-                self.currentWish().setMap(map);
-                map.setCenter(self.currentWish().position);
-                map.setZoom(15);
-            }
-
             // verify response from localStorage
             if (allWishes === 'error'){
                 self.wishFlash(true);
@@ -539,7 +534,7 @@ var ViewModel = function() {
                         notes: wish.notes
                     });
                     marker.addListener('click', wishListener);
-                    marker.addListener('dblclick', wishListenerDblClick)
+                    marker.addListener('dblclick', wishListenerDblClick);
                     marker.setMap(null);
                     placesWishes.push(marker);
                 }
@@ -570,23 +565,25 @@ var ViewModel = function() {
     this.currentDream = ko.observable();
     this.dreamList = ko.observableArray([]);
     this.showDreams = function() {
+
+        //set configs to dream marker
+        function dreamListenerClick() {
+            resetLayout();
+            self.currentDream(this);
+            self.currentDream().setMap(map);
+        }
+        function dreamListenerDblClick() {
+            resetLayout();
+            self.currentDream(this);
+            self.currentDream().setMap(map);
+            map.setCenter(self.currentDream().position);
+            map.setZoom(15);
+        }
+
         if (placesDreams.length > 0) {
             showListings('dreams', placesDreams);
         } else {
             allDreams = getDreams();
-            //set configs to dream marker
-            function dreamListenerClick() {
-                resetLayout();
-                self.currentDream(this);
-                self.currentDream().setMap(map);
-            }
-            function dreamListenerDblClick() {
-                resetLayout();
-                self.currentDream(this);
-                self.currentDream().setMap(map);
-                map.setCenter(self.currentDream().position);
-                map.setZoom(15);
-            }
             // verify response from localStorage
             if (allDreams === 'error'){
                 self.dreamFlash(true);
@@ -654,20 +651,20 @@ var ViewModel = function() {
                 placesDreams[i].setMap(null);
             }
         } else if (token === 'dreams') {
-            for (var i = 0; i < placesWishes.length; i++) {
-                placesWishes[i].setMap(null);
+            for (var j = 0; j < placesWishes.length; j++) {
+                placesWishes[j].setMap(null);
             }
         }
         var bounds = new google.maps.LatLngBounds();
         // Extend the boundaries of the map for each marker and display the marker
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(map);
-            bounds.extend(markers[i].position);
+        for (var s = 0; s < markers.length; s++) {
+            markers[s].setMap(map);
+            bounds.extend(markers[s].position);
         }
         map.fitBounds(bounds);
     }
 
-    create_markers()
+    create_markers();
 
 };
 function initMap() {
