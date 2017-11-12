@@ -13,7 +13,8 @@ var config = {
 ```
 The app will load this to complete key.
 
-So, run index.html and fun.
+So, run index.html and fun. The app loads some wishes and dreams as an example.
+Just click WISHES or DREAM AS TRUE to visialize them.
 
 ## Features
 Google Maps API is used to show places around the world where you have
