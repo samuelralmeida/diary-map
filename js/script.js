@@ -46,7 +46,7 @@ var locations = [
     lat: -13.1631412,
     lng: -72.54496289999997,
     title: "Machu Picchu"},
-]
+];
 
 var Location = function(data) {
   var self = this;
@@ -74,7 +74,7 @@ var Location = function(data) {
     self.street = results.location.formattedAddress[0];
     self.city = results.location.formattedAddress[1];
   }).fail(function() {
-    alert("Occur an error in Foursquare API call. Refresh page")
+    alert("Occur an error in Foursquare API call. Refresh page");
   });
 
   // crate infowindow content
@@ -102,10 +102,11 @@ var Location = function(data) {
   }
 
   //create marker for location
+  var icon;
   if(data.type === "achievement") {
-    var icon = makeMarkerIcon('FFFF24');
+    icon = makeMarkerIcon('FFFF24');
   } else if (data.type === "wish") {
-    var icon = makeMarkerIcon('0091ff');
+    icon = makeMarkerIcon('0091ff');
   }
 
 	this.marker = new google.maps.Marker({
@@ -149,8 +150,6 @@ var Location = function(data) {
 
   this.bounce = function(place) {
     google.maps.event.trigger(self.marker, 'click');
-
-    self
   };
 
 };
