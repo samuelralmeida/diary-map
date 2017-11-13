@@ -8,267 +8,49 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel=stylesheet type=text/css href="static/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 </head>
 <body>
-  <div id="wrapper">
+  <body>
+    <div class="container-fluid">
+      <div class="cont row">
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">
+              Filter
+            </h5>
+          </div>
+          <div class="card-block">
+            <div class="search" id="search">
+          		<input class="search-box" id="search-box" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'" />
+          	</div>
+          </div>
+        </div>
+        <br>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">
+              Locations
+            </h5>
+          </div>
+          <ul class="list-group list-group-flush" data-bind="foreach: filteredList">
+            <li class="list-group-item list-group-item-action" data-bind="text: title, click: bounce"></li>
+          </ul>
+        </div>
 
-      <!-- Sidebar -->
-      <div id="sidebar-wrapper">
-        <div data-bind="visible: searches">
-          <div class="sidebar-header">
-              <h3 class="sidebar-title">Search Results</h3>
-          </div>
-          <div data-bind="visible: searchFlash">
-            <p class="flash-search">Do a search and see the results listed here</p>
-          </div>
-          <ul class="wish-ul" data-bind="foreach: markersList">
-              <li class="li-search" data-bind="text: title, click: $parent.setMarker"></li>
-          </ul>
-        </div>
-        <div data-bind="visible: wishes">
-          <div class="sidebar-header">
-              <h3 class="sidebar-title">Wishes</h3>
-          </div>
-          <div data-bind="visible: wishFlash">
-            <p class="flash-wish">There are no saved wishes</p>
-          </div>
-          <ul class="wish-ul" data-bind="foreach: wishList">
-              <li class="li-wish" data-bind="text: title, click: $parent.setWish"></li>
-          </ul>
-        </div>
-        <div data-bind="visible: dreams">
-          <div class="sidebar-header">
-              <h3 class="sidebar-title">Dreams come true</h3>
-          </div>
-          <div data-bind="visible: dreamFlash">
-            <p class="flash-dream">There are no saved dreams</p>
-          </div>
-          <ul class="wish-ul" data-bind="foreach: dreamList">
-              <li class="li-dream" data-bind="text: title, click: $parent.setDream"></li>
-          </ul>
-        </div>
       </div>
 
-      <!-- /#sidebar-wrapper -->
-
-      <!-- Page Content -->
-      <div id="page-content-wrapper">
-
-          <div class="container-fluid">
-            <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-              <a class="navbar-brand" href="#">Diary Map</a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-
-              <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-                <ul class="navbar-nav mr-auto">
-                  <li class="nav-item">
-                    <a class="nav-link" href="#menu-toggle" id="menu-toggle1">Search results</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#menu-toggle" id="menu-toggle2" data-bind="click: showWishes">Wishes</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#menu-toggle" id="menu-toggle3" data-bind="click: showDreams">Dreams come true</a>
-                  </li>
-                </ul>
-              </div>
-            </nav>
-
-            <main role="main">
-
-              <!-- Main jumbotron for a primary marketing message or call to action -->
-              <div class="jumbotron">
-                <div class="container">
-                  <h1 class="display-3">Hello, memories!</h1>
-                  <p>Plan fantastic memories and never forget them again.</p>
-                  <div class="place-search">
-                    <input id="places-search" type="text" placeholder="Type a place and select it in map">
-                    <input id="go-places" type="button" value="Go">
-                  </div>
-                </div>
-              </div>
-
-              <div class="container-fluid">
-                <!-- Row of google map-->
-                <div class="map row" id="step">
-                    <div class="col-md-12">
-                        <div id="map"></div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="result" data-bind="visible: result, text: flash"></div>
-                    </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-12">
-                    <div data-bind="if: currentMarker">
-                      <div data-bind="with: currentMarker">
-                        <h4 data-bind="text: title"></h4>
-                      </div>
-                      <hr>
-                  </div>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-4">
-                    <div data-bind="if: currentMarker">
-                      <p>
-                        <span>Step 0 - </span>
-                        <span data-bind="text: currentMarker().title"></span>
-                        <span> is a: </span>
-                      </p>
-                      <div><label><input type="radio" value="Wish" data-bind="checked: wishOrDream, click: display">Dream to realize</label></div>
-                      <div><label><input type="radio" value="Dream" data-bind="checked: wishOrDream, click: display">Dream come true</label></div>
-                    </div>
-                    <div data-bind="if: displayWish">
-                      <form data-bind="submit: saveWish">
-                        <div class="form-row">
-                          <div class="form-group col-md-12">
-                            <div>
-                                <h6>Step 1 - Choose a date to realize this dream</h6>
-                                <input type="date" name="dayD" data-bind="value: date">
-                            </div>
-                            <br>
-                            <div>
-                              <h6>Step 2 - Find out about the location (optional)</h6>
-                              <p>Read some articles that we link to you</p>
-                            </div>
-                            <div>
-                                <h6>Step 3 - Total cost (Format: 22.18)</h6>
-                                <input type="number" min="0.00" max="10000.00" step="0.01" data-bind="value: cost">
-                                <p>Tips: account entry, transportation, hosting, food, etc.</p>
-                            </div>
-                            <div>
-                                <h6>Step 4 - Notes</h6>
-                                <span>What are your expectations? What do you want to do there? Detail your dream to make it palpable.</span>
-                            </div>
-                            <div>
-                                <textarea class="form-control" rows="5" data-bind="value: notes"></textarea>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-primary">Save this dream</button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-
-                    <div data-bind="if: displayDream">
-                      <form data-bind="submit: saveDream">
-                        <div class="form-row">
-                          <div class="form-group col-md-12">
-                            <div>
-                                <h6>Step 1 - When did you realize that dream?</h6>
-                                <input type="date" name="dayD" data-bind="value: date">
-                            </div>
-                            <br>
-                            <div>
-                              <h6>Step 2 - Know more (optional)</h6>
-                              <p>Read some articles that we link to you</p>
-                            </div>
-                            <div>
-                                <h6>Step 3 - Notes</h6>
-                                <span>What you liked the most? What surprised you the most? What do not you want to forget?</span>
-                            </div>
-                            <div>
-                                <textarea class="form-control" rows="5" data-bind="value: notes"></textarea>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-primary">Do not forget this realization</button>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-
-                  <div class="col-md-8">
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div>
-                          <p data-bind="text: wikiMsg"></p>
-                        </div>
-                        <div>
-                          <ul data-bind="foreach: wikiLinks">
-                            <li><a target="_blank" data-bind="attr: {href: url}, text: title"></a></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div>
-                          <p data-bind="text: nytMsg"></p>
-                        </div>
-                        <div>
-                          <ul data-bind="foreach: nytLinks">
-                            <li>
-                              <a target="_blank" data-bind="attr: {href: url}, text: title"></a>
-                              <p data-bind="text: snippet"></p>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-12">
-                    <div data-bind="if: currentWish">
-                      <div data-bind="with: currentWish">
-                        <h4 data-bind="text: title"></h4>
-                        <hr>
-                        <h6>
-                          <span>The date to realize this dream: </span>
-                          <span data-bind="text: date"></span>
-                        </h6>
-                        <h6>
-                          <span>You estimated the budget in $</span>
-                          <span data-bind="text: cost"></span>
-                        </h6>
-                        <h6>Important notes:</h6>
-                        <p data-bind="text: notes"></p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-12">
-                    <div data-bind="if: currentDream">
-                      <div data-bind="with: currentDream">
-                        <h4 data-bind="text: title"></h4>
-                        <hr>
-                        <h6>
-                          <span>You realized this dream in: </span>
-                          <span data-bind="text: date"></span>
-                        </h6>
-                        <h6>Important memories:</h6>
-                        <p data-bind="text: notes"></p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </main>
-          </div>
+      <div class="col-sm-9" id="map">
       </div>
-      <!-- /#page-content-wrapper -->
-
-  </div>
-
+    </div>
+    </div>
 
     <!--scripts-->
     <script type='text/javascript' src='js/config.js'></script>
     <script type='text/javascript' src='js/script.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKcl3yCoPGalDSunGh6I7lP7COjDYXrOY&libraries=places&callback=initMap" onerror="errorHandling()"></script>
 </body>
 </html>
